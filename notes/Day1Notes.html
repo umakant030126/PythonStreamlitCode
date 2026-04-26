@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Streamlit – Day 1 Notes | Your Python Trainer</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Lora:ital,wght@0,400;0,600;1,400&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:        #f7f3ee;
+  --paper:     #fffdf9;
+  --ink:       #1a1410;
+  --muted:     #7a6f65;
+  --accent:    #c0392b;
+  --accent2:   #2471a3;
+  --highlight: #f9e79f;
+  --code-bg:   #1e1e2e;
+  --code-fg:   #cdd6f4;
+  --border:    #e0d8ce;
+  --tag-bg:    #fdebd0;
+  --tag-fg:    #c0392b;
+  --note-bg:   #eaf4fb;
+  --note-border:#2471a3;
+  --tip-bg:    #e9f7ef;
+  --tip-border:#27ae60;
+  --warn-bg:   #fef9e7;
+  --warn-border:#f39c12;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Lora', Georgia, serif;
+  font-size: 17px;
+  line-height: 1.85;
+}
+
+/* ── TOP NAV ── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--ink);
+  padding: 0.7rem 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+.nav-brand {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800; font-size: 1rem;
+  color: #fff;
+  letter-spacing: 0.05em;
+}
+.nav-brand span { color: #e74c3c; }
+.nav-day {
+  font-family: 'Fira Code', monospace;
+  font-size: 0.75rem;
+  color: #aaa;
+  background: rgba(255,255,255,0.07);
+  border-radius: 20px;
+  padding: 0.25rem 0.8rem;
+}
+
+/* ── HERO BANNER ── */
+.hero {
+  background: var(--ink);
+  color: #fff;
+  padding: 4rem 5rem 3.5rem;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content:"";
+  position:absolute; top:-60px; right:-60px;
+  width:300px; height:300px;
+  border-radius:50%;
+  background: radial-gradient(circle, rgba(192,57,43,0.25) 0%, transparent 70%);
+}
+.hero-eyebrow {
+  font-family:'Fira Code',monospace;
+  font-size:0.75rem;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:#e74c3c;
+  margin-bottom:0.8rem;
+}
+.hero h1 {
+  font-family:'Syne',sans-serif;
+  font-size: clamp(2.2rem,5vw,3.6rem);
+  font-weight:800;
+  line-height:1.1;
+  margin-bottom:0.8rem;
+  letter-spacing:-0.02em;
+}
+.hero h1 em { color:#e74c3c; font-style:normal; }
+.hero p {
+  color:#bbb;
+  font-family:'Lora',serif;
+  font-size:1rem;
+  max-width:580px;
+  margin-bottom:1.5rem;
+}
+.hero-pills { display:flex; flex-wrap:wrap; gap:0.5rem; }
+.pill {
+  font-family:'Fira Code',monospace;
+  font-size:0.72rem;
+  padding:0.3rem 0.8rem;
+  border-radius:20px;
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.15);
+  color:#ddd;
+}
+
+/* ── PROGRESS BAR ── */
+.progress-section {
+  background: var(--paper);
+  border-bottom: 1px solid var(--border);
+  padding: 1.2rem 5rem;
+}
+.progress-label {
+  font-family:'Fira Code',monospace;
+  font-size:0.72rem;
+  color:var(--muted);
+  margin-bottom:0.5rem;
+  text-transform:uppercase;
+  letter-spacing:0.1em;
+}
+.progress-track {
+  display:flex; gap:0.3rem; align-items:center;
+}
+.prog-day {
+  flex:1; height:6px; border-radius:3px;
+  background:var(--border);
+}
+.prog-day.done { background: var(--accent); }
+.prog-day.current { background: var(--accent2); }
+.prog-nums {
+  font-family:'Fira Code',monospace;
+  font-size:0.7rem;
+  color:var(--muted);
+  margin-left:0.6rem;
+}
+
+/* ── TOC ── */
+.toc-wrap {
+  max-width:860px; margin:2.5rem auto; padding:0 2rem;
+}
+.toc-card {
+  background:var(--paper);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:1.5rem 2rem;
+}
+.toc-title {
+  font-family:'Syne',sans-serif;
+  font-size:0.85rem;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:0.12em;
+  color:var(--muted);
+  margin-bottom:1rem;
+}
+.toc-list { list-style:none; }
+.toc-list li {
+  display:flex; align-items:center; gap:0.6rem;
+  padding:0.35rem 0;
+  border-bottom:1px dashed var(--border);
+  font-size:0.92rem;
+}
+.toc-list li:last-child { border-bottom:none; }
+.toc-num {
+  font-family:'Fira Code',monospace;
+  font-size:0.7rem;
+  color:var(--accent);
+  min-width:28px;
+}
+.toc-list a { color:var(--ink); text-decoration:none; }
+.toc-list a:hover { color:var(--accent); }
+
+/* ── MAIN CONTENT ── */
+main {
+  max-width:860px;
+  margin: 0 auto;
+  padding: 0 2rem 4rem;
+}
+
+/* ── SECTIONS ── */
+.lesson {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 2px solid var(--border);
+}
+.lesson:first-of-type { border-top:none; }
+
+.lesson-num {
+  font-family:'Fira Code',monospace;
+  font-size:0.7rem;
+  color:var(--accent);
+  text-transform:uppercase;
+  letter-spacing:0.15em;
+  margin-bottom:0.4rem;
+}
+.lesson h2 {
+  font-family:'Syne',sans-serif;
+  font-size:1.7rem;
+  font-weight:800;
+  color:var(--ink);
+  margin-bottom:1rem;
+  line-height:1.15;
+}
+
+p { margin-bottom:1rem; color:#2c2825; }
+
+/* ── CALLOUT BOXES ── */
+.box {
+  border-left:4px solid;
+  border-radius:0 10px 10px 0;
+  padding:1rem 1.3rem;
+  margin:1.5rem 0;
+  font-size:0.93rem;
+}
+.box-label {
+  font-family:'Syne',sans-serif;
+  font-size:0.72rem;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:0.12em;
+  margin-bottom:0.4rem;
+}
+.note  { background:var(--note-bg);  border-color:var(--note-border); }
+.note  .box-label { color:var(--note-border); }
+.tip   { background:var(--tip-bg);   border-color:var(--tip-border); }
+.tip   .box-label { color:var(--tip-border); }
+.warn  { background:var(--warn-bg);  border-color:var(--warn-border); }
+.warn  .box-label { color:var(--warn-border); }
+.think { background:#f5eef8; border-color:#8e44ad; }
+.think .box-label { color:#8e44ad; }
+
+/* ── ANALOGY CARD ── */
+.analogy {
+  background: var(--highlight);
+  border:1px solid #f0c840;
+  border-radius:10px;
+  padding:1rem 1.3rem;
+  margin:1.5rem 0;
+  font-size:0.93rem;
+}
+.analogy-label {
+  font-family:'Syne',sans-serif;
+  font-size:0.7rem;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:0.12em;
+  color:#9a7d0a;
+  margin-bottom:0.3rem;
+}
+
+/* ── CODE BLOCK ── */
+.code-wrap {
+  background:var(--code-bg);
+  border-radius:10px;
+  overflow:hidden;
+  margin:1.5rem 0;
+  box-shadow:0 4px 20px rgba(0,0,0,0.2);
+}
+.code-header {
+  background:#161622;
+  padding:0.55rem 1.2rem;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.code-lang {
+  font-family:'Fira Code',monospace;
+  font-size:0.68rem;
+  color:#6c7086;
+  text-transform:uppercase;
+  letter-spacing:0.1em;
+}
+.code-dots { display:flex; gap:5px; }
+.code-dots span {
+  width:10px; height:10px; border-radius:50%;
+}
+.dot-r{background:#ff5f57;} .dot-y{background:#febc2e;} .dot-g{background:#28c840;}
+pre {
+  padding:1.3rem 1.5rem;
+  overflow-x:auto;
+  font-family:'Fira Code',monospace;
+  font-size:0.84rem;
+  line-height:1.7;
+  color:var(--code-fg);
+}
+.kw  { color:#cba6f7; } /* keyword */
+.fn  { color:#89b4fa; } /* function */
+.str { color:#a6e3a1; } /* string */
+.cm  { color:#6c7086; font-style:italic; } /* comment */
+.num { color:#fab387; } /* number */
+.var { color:#f38ba8; } /* variable */
+.cls { color:#f9e2af; } /* class/module */
+.op  { color:#89dceb; } /* operator */
+
+/* ── COMPARISON TABLE ── */
+table {
+  width:100%;
+  border-collapse:collapse;
+  margin:1.5rem 0;
+  font-size:0.88rem;
+}
+th {
+  background:var(--ink);
+  color:#fff;
+  font-family:'Syne',sans-serif;
+  font-size:0.75rem;
+  text-transform:uppercase;
+  letter-spacing:0.08em;
+  padding:0.6rem 1rem;
+  text-align:left;
+}
+td {
+  padding:0.6rem 1rem;
+  border-bottom:1px solid var(--border);
+  background:var(--paper);
+  vertical-align:top;
+}
+tr:nth-child(even) td { background:#f5f0ea; }
+td code {
+  font-family:'Fira Code',monospace;
+  font-size:0.8rem;
+  background:var(--bg);
+  padding:0.1rem 0.4rem;
+  border-radius:4px;
+  color:var(--accent);
+}
+
+/* ── STEP LIST ── */
+.steps { counter-reset:step; list-style:none; margin:1.2rem 0; }
+.steps li {
+  counter-increment:step;
+  display:flex; gap:1rem;
+  margin-bottom:1rem;
+  align-items:flex-start;
+}
+.steps li::before {
+  content:counter(step);
+  min-width:28px; height:28px;
+  background:var(--accent);
+  color:#fff;
+  font-family:'Syne',sans-serif;
+  font-weight:700;
+  font-size:0.78rem;
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+  margin-top:0.1rem;
+}
+
+/* ── MINI QUIZ ── */
+.quiz {
+  background:var(--paper);
+  border:2px solid var(--ink);
+  border-radius:12px;
+  padding:1.5rem 2rem;
+  margin:2rem 0;
+}
+.quiz-title {
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:1rem;
+  margin-bottom:1rem;
+  display:flex; align-items:center; gap:0.5rem;
+}
+.quiz ol { margin-left:1.2rem; font-size:0.9rem; }
+.quiz li { margin-bottom:0.5rem; }
+.quiz-ans {
+  margin-top:1rem;
+  padding:0.8rem 1rem;
+  background:var(--tip-bg);
+  border-radius:8px;
+  font-size:0.85rem;
+  border:1px solid var(--tip-border);
+}
+.quiz-ans summary {
+  font-family:'Syne',sans-serif;
+  font-size:0.78rem;
+  font-weight:700;
+  cursor:pointer;
+  color:var(--tip-border);
+  text-transform:uppercase;
+  letter-spacing:0.08em;
+}
+
+/* ── CHEAT SHEET ── */
+.cheat {
+  background:var(--ink);
+  color:#e2e8f0;
+  border-radius:12px;
+  padding:1.8rem 2rem;
+  margin:2rem 0;
+}
+.cheat-title {
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:1rem;
+  color:#e74c3c;
+  margin-bottom:1rem;
+  border-bottom:1px solid rgba(255,255,255,0.1);
+  padding-bottom:0.5rem;
+}
+.cheat-row {
+  display:grid;
+  grid-template-columns: 200px 1fr;
+  gap:0.5rem 1rem;
+  margin-bottom:0.5rem;
+  font-size:0.85rem;
+  align-items:center;
+}
+.cheat-code {
+  font-family:'Fira Code',monospace;
+  color:#f9e2af;
+  font-size:0.8rem;
+}
+.cheat-desc { color:#94a3b8; }
+
+/* ── HOMEWORK ── */
+.homework {
+  background: linear-gradient(135deg,#1a1410 0%,#2c1810 100%);
+  color:#e2e8f0;
+  border-radius:12px;
+  padding:2rem 2.2rem;
+  margin:2.5rem 0;
+}
+.hw-title {
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:1.1rem;
+  color:#e74c3c;
+  margin-bottom:0.3rem;
+}
+.hw-subtitle {
+  font-size:0.8rem;
+  color:#888;
+  font-family:'Fira Code',monospace;
+  margin-bottom:1.2rem;
+}
+.hw-list { list-style:none; }
+.hw-list li {
+  padding:0.5rem 0;
+  border-bottom:1px solid rgba(255,255,255,0.07);
+  font-size:0.9rem;
+  display:flex; gap:0.6rem; align-items:flex-start;
+}
+.hw-list li::before { content:"▸"; color:#e74c3c; flex-shrink:0; margin-top:0.1rem; }
+
+/* ── FOOTER ── */
+footer {
+  background:var(--ink);
+  color:#666;
+  text-align:center;
+  padding:2rem;
+  font-family:'Fira Code',monospace;
+  font-size:0.75rem;
+}
+footer span { color:#e74c3c; }
+
+/* ── INLINE CODE ── */
+code {
+  font-family:'Fira Code',monospace;
+  font-size:0.83em;
+  background:#ede8e2;
+  color:var(--accent);
+  padding:0.1rem 0.4rem;
+  border-radius:4px;
+}
+
+/* ── HIGHLIGHT TEXT ── */
+mark { background:var(--highlight); padding:0 0.2rem; border-radius:3px; }
+
+@media(max-width:680px){
+  .hero,.progress-section{padding-left:1.5rem;padding-right:1.5rem;}
+  main,.toc-wrap{padding-left:1.2rem;padding-right:1.2rem;}
+  .hero h1{font-size:2rem;}
+  .cheat-row{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">🐍 <span>Python</span> Trainer</div>
+  <div class="nav-day">📅 Day 1 of 30 — Streamlit</div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">// Your Personal Python Trainer · Streamlit Series</div>
+  <h1>Day 1: <em>What is Streamlit</em><br/>& How It Works</h1>
+  <p>Welcome! Since you know basic Python, today we build your foundation for Streamlit — the easiest way to turn Python scripts into beautiful web apps.</p>
+  <div class="hero-pills">
+    <span class="pill">🕐 ~45 min read</span>
+    <span class="pill">🟢 Beginner-friendly</span>
+    <span class="pill">💻 Hands-on code</span>
+    <span class="pill">📝 Mini quiz included</span>
+    <span class="pill">🏠 Homework at end</span>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-section">
+  <div class="progress-label">Your 30-Day Streamlit Journey</div>
+  <div class="progress-track">
+    <div class="prog-day current" title="Day 1 - Today"></div>
+    <div class="prog-day" title="Day 2"></div>
+    <div class="prog-day" title="Day 3"></div>
+    <div class="prog-day" title="Day 4"></div>
+    <div class="prog-day" title="Day 5"></div>
+    <div class="prog-day" title="Day 6"></div>
+    <div class="prog-day" title="Day 7"></div>
+    <div class="prog-day" title="Day 8"></div>
+    <div class="prog-day" title="Day 9"></div>
+    <div class="prog-day" title="Day 10"></div>
+    <div class="prog-day"></div><div class="prog-day"></div><div class="prog-day"></div>
+    <div class="prog-day"></div><div class="prog-day"></div><div class="prog-day"></div>
+    <div class="prog-day"></div><div class="prog-day"></div><div class="prog-day"></div>
+    <div class="prog-day"></div><div class="prog-day"></div><div class="prog-day"></div>
+    <div class="prog-day"></div><div class="prog-day"></div><div class="prog-day"></div>
+    <div class="prog-day"></div><div class="prog-day"></div><div class="prog-day"></div>
+    <div class="prog-day"></div><div class="prog-day"></div>
+    <div class="prog-nums">1 / 30</div>
+  </div>
+</div>
+
+<!-- TOC -->
+<div class="toc-wrap">
+  <div class="toc-card">
+    <div class="toc-title">📚 Today's Lessons</div>
+    <ul class="toc-list">
+      <li><span class="toc-num">01</span><a href="#what">What is Streamlit? (The Big Picture)</a></li>
+      <li><span class="toc-num">02</span><a href="#why">Why Streamlit? (vs Flask, Django, etc.)</a></li>
+      <li><span class="toc-num">03</span><a href="#how">How Streamlit Works (Magic Behind the Scenes)</a></li>
+      <li><span class="toc-num">04</span><a href="#install">Installation & Setup</a></li>
+      <li><span class="toc-num">05</span><a href="#first">Your First Streamlit App (Hello World)</a></li>
+      <li><span class="toc-num">06</span><a href="#text">Text Elements — st.title, st.write, st.markdown</a></li>
+      <li><span class="toc-num">07</span><a href="#run">Running the App & Hot Reload</a></li>
+      <li><span class="toc-num">08</span><a href="#cheat">Day 1 Cheat Sheet</a></li>
+      <li><span class="toc-num">09</span><a href="#quiz">Mini Quiz</a></li>
+      <li><span class="toc-num">10</span><a href="#hw">Homework</a></li>
+    </ul>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main>
+
+<!-- ─────────────────────────────────────── -->
+<div class="lesson" id="what">
+  <div class="lesson-num">Lesson 01</div>
+  <h2>What is Streamlit? 🤔</h2>
+
+  <p>Imagine you are a chef. You made an amazing dish (a Python data analysis or ML model). But your guests (your manager, client, or colleague) can't come into your kitchen. They want to see the dish on a nice plate, on the dining table.</p>
+
+  <div class="analogy">
+    <div class="analogy-label">🍽️ Analogy</div>
+    <strong>Your Python script = The dish you cooked.</strong><br/>
+    <strong>Streamlit = The dining table + the plate + the presentation.</strong><br/>
+    It takes your Python code and puts it on a web page that anyone can see in a browser — without you learning any HTML, CSS, or JavaScript!
+  </div>
+
+  <p><strong>Streamlit is a free, open-source Python library</strong> that lets you build interactive web applications directly from your Python scripts. You write Python. Streamlit turns it into a website. That's it!</p>
+
+  <p>Who uses Streamlit?</p>
+  <ul style="margin-left:1.5rem; margin-bottom:1rem;">
+    <li>Data Scientists who want to show their analysis</li>
+    <li>QA Engineers (like you!) who want dashboards for test results</li>
+    <li>ML Engineers who want to demo their models</li>
+    <li>Anyone who knows Python and wants a quick web app</li>
+  </ul>
+
+  
+</div>
+
+<!-- ─────────────────────────────────────── -->
+<div class="lesson" id="why">
+  <div class="lesson-num">Lesson 02</div>
+  <h2>Why Streamlit? Not Flask or Django? 🤷</h2>
+
+  <p>You may have heard of Flask or Django. They are also used to make web apps in Python. So why learn Streamlit?</p>
+
+  <table>
+    <thead>
+      <tr><th>Feature</th><th>Flask / Django</th><th>Streamlit</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Learning time</td><td>Weeks to months</td><td>Hours to days ✅</td></tr>
+      <tr><td>HTML knowledge needed?</td><td>Yes, required</td><td>No! Optional ✅</td></tr>
+      <tr><td>Lines of code for a button</td><td>10–20 lines</td><td>1 line ✅</td></tr>
+      <tr><td>Best for</td><td>Full web products</td><td>Data apps, dashboards, prototypes ✅</td></tr>
+      <tr><td>Speed of development</td><td>Slow</td><td>Very fast ✅</td></tr>
+      <tr><td>Interactive widgets</td><td>Manual HTML forms</td><td>Built-in, just call a function ✅</td></tr>
+    </tbody>
+  </table>
+
+  <div class="box tip">
+    <div class="box-label">💡 Bottom Line</div>
+    Use <strong>Streamlit</strong> when you want to show your data/results/model fast. Use <strong>Flask/Django</strong> when you need a full production website. For learning and quick apps — Streamlit wins every time.
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────── -->
+<div class="lesson" id="how">
+  <div class="lesson-num">Lesson 03</div>
+  <h2>How Does Streamlit Work? ⚙️</h2>
+
+  <p>This is the most important concept to understand before writing even one line of code. Let me explain it simply.</p>
+
+  <div class="analogy">
+    <div class="analogy-label">🎬 Analogy — The Movie Projector</div>
+    Think of Streamlit like a movie projector. Every time someone interacts with the web page (clicks a button, moves a slider), the projector <strong>re-plays the entire movie from the beginning</strong>. That's exactly how Streamlit works — it re-runs your entire Python script from top to bottom every time something changes!
+  </div>
+
+  <p>Here is the exact flow of what happens:</p>
+
+  <ol class="steps">
+    <li>You write a Python file, say <code>app.py</code>, with Streamlit commands.</li>
+    <li>You run it using the command: <code>streamlit run app.py</code></li>
+    <li>Streamlit starts a small local web server on your computer.</li>
+    <li>It opens your browser automatically at <code>http://localhost:8501</code></li>
+    <li>Your Python file runs top-to-bottom, and every <code>st.something()</code> call puts content on the page.</li>
+    <li>When a user interacts (clicks, types), the whole script runs again from line 1.</li>
+  </ol>
+
+  <div class="box warn">
+    <div class="box-label">⚠️ Important Rule to Remember</div>
+    <strong>Streamlit reruns the entire script on every interaction.</strong> This means variables reset on every run unless you use special tools like <code>st.session_state</code> (we'll learn that on Day 5). For now, just know this behaviour!
+  </div>
+
+  <div class="box note">
+    <div class="box-label">🧠 Why is this useful?</div>
+    Because you don't have to manually manage "what changes when button is clicked". Streamlit handles all that complexity. You just write your Python logic and it re-executes. Simple!
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────── -->
+<div class="lesson" id="install">
+  <div class="lesson-num">Lesson 04</div>
+  <h2>Installation & Setup 🛠️</h2>
+
+  <p>Let's get Streamlit running on your computer. This is super simple — just one command!</p>
+
+  <p><strong>Step 1 — Make sure Python is installed</strong> (you already know Python, so you have this). Open your terminal / command prompt and type:</p>
+
+  <div class="code-wrap">
+    <div class="code-header">
+      <span class="code-lang">terminal / cmd</span>
+      <div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+    </div>
+    <pre>python --version
+<span class="cm"># You should see something like: Python 3.9.7</span></pre>
+  </div>
+
+  <p><strong>Step 2 — Install Streamlit</strong> using pip (Python's package installer):</p>
+
+  <div class="code-wrap">
+    <div class="code-header">
+      <span class="code-lang">terminal / cmd</span>
+      <div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+    </div>
+    <pre>pip install streamlit</pre>
+  </div>
+
+  <p><strong>Step 3 — Verify installation</strong>:</p>
+
+  <div class="code-wrap">
+    <div class="code-header">
+      <span class="code-lang">terminal / cmd</span>
+      <div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+    </div>
+    <pre>streamlit --version
+<span class="cm"># You should see: Streamlit, version X.X.X</span></pre>
+  </div>
+
+  <p><strong>Step 4 — (Optional but recommended) Create a virtual environment</strong> to keep your projects clean:</p>
+
+  <div class="code-wrap">
+    <div class="code-header">
+      <span class="code-lang">terminal — optional best practice</span>
+      <div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+    </div>
+    <pre><span class="cm"># Create virtual environment</span>
+python -m venv streamlit_env
+
+<span class="cm"># Activate it (Windows)</span>
+streamlit_env\Scripts\activate
+
+<span class="cm"># Activate it (Mac / Linux)</span>
+source streamlit_env/bin/activate
+
+<span class="cm"># Now install streamlit inside it</span>
+pip install streamlit</pre>
+  </div>
+
+  <div class="box tip">
+    <div class="box-label">💡 What is a Virtual Environment?</div>
+    Think of it like a separate room for each project. Each room has its own tools and libraries. So installing something for Project A doesn't break Project B. It's a professional best practice!
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────── -->
+<div class="lesson" id="first">
+  <div class="lesson-num">Lesson 05</div>
+  <h2>Your First Streamlit App 🎉</h2>
+
+  <p>Let's write your very first Streamlit app. Create a new file called <code>app.py</code> (or any name ending in <code>.py</code>) and type this:</p>
+
+  <div class="code-wrap">
+    <div class="code-header">
+      <span class="code-lang">python — app.py</span>
+      <div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+    </div>
+    <pre><span class="kw">import</span> <span class="cls">streamlit</span> <span class="kw">as</span> <span class="var">st</span>
+
+<span class="fn">st.title</span>(<span class="str">"Hello, World! 🌍"</span>)
+<span class="fn">st.write</span>(<span class="str">"My name is Umakant Pandey."</span>)
+<span class="fn">st.write</span>(<span class="str">"I am learning Streamlit today!"</span>)</pre>
+  </div>
+
+  <p>Let's break it down <strong>line by line</strong>:</p>
+
+  <table>
+    <thead><tr><th>Line of Code</th><th>What it does (in plain English)</th></tr></thead>
+    <tbody>
+      <tr><td><code>import streamlit as st</code></td><td>We bring the Streamlit library into our script and give it a short nickname <code>st</code>. Now instead of typing <code>streamlit.title()</code> every time, we just type <code>st.title()</code>. Saves typing!</td></tr>
+      <tr><td><code>st.title("Hello, World! 🌍")</code></td><td>Puts a big bold heading on the page — like an H1 heading in a document.</td></tr>
+      <tr><td><code>st.write("My name is...")</code></td><td><code>st.write()</code> is the Swiss Army knife of Streamlit. It can display text, numbers, tables, dataframes, charts — almost anything! Here it shows a paragraph of text.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="box note">
+    <div class="box-label">🧠 Note on "as st"</div>
+    <code>import streamlit as st</code> — the <code>as st</code> part is just a nickname (alias). Programmers do this to save time. It's like calling your friend "Uma" instead of "Umakant" — both work, short is easier!
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────── -->
+<div class="lesson" id="text">
+  <div class="lesson-num">Lesson 06</div>
+  <h2>Text Elements — Your Toolkit for Words 📝</h2>
+
+  <p>Streamlit has many functions just for showing text. Think of them like different-sized stamps:</p>
+
+  <div class="code-wrap">
+    <div class="code-header">
+      <span class="code-lang">python — text_demo.py</span>
+      <div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+    </div>
+    <pre><span class="kw">import</span> <span class="cls">streamlit</span> <span class="kw">as</span> <span class="var">st</span>
+
+<span class="cm"># ── TITLE: The biggest heading on the page ──────────────────</span>
+<span class="fn">st.title</span>(<span class="str">"I am the Title — Big and Bold!"</span>)
+
+<span class="cm"># ── HEADER: Second level heading ────────────────────────────</span>
+<span class="fn">st.header</span>(<span class="str">"I am a Header — Slightly Smaller"</span>)
+
+<span class="cm"># ── SUBHEADER: Third level heading ──────────────────────────</span>
+<span class="fn">st.subheader</span>(<span class="str">"I am a Subheader — Even Smaller"</span>)
+
+<span class="cm"># ── WRITE: General purpose display ──────────────────────────</span>
+<span class="fn">st.write</span>(<span class="str">"Hello! I can show text, numbers, even Python objects."</span>)
+<span class="fn">st.write</span>(<span class="num">42</span>)                         <span class="cm"># It shows the number 42</span>
+<span class="fn">st.write</span>([<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>])                  <span class="cm"># It shows a list!</span>
+
+<span class="cm"># ── TEXT: Plain text, no formatting ─────────────────────────</span>
+<span class="fn">st.text</span>(<span class="str">"I am plain monospace text. Like a console output."</span>)
+
+<span class="cm"># ── MARKDOWN: Write formatted text using Markdown syntax ────</span>
+<span class="fn">st.markdown</span>(<span class="str">"**Bold text**, *italic text*, and `code text`"</span>)
+<span class="fn">st.markdown</span>(<span class="str">"## This is a Markdown Heading Level 2"</span>)
+<span class="fn">st.markdown</span>(<span class="str">"- Item 1\n- Item 2\n- Item 3"</span>)  <span class="cm"># Bullet list!</span>
+
+<span class="cm"># ── CAPTION: Small grey text, like footnotes ────────────────</span>
+<span class="fn">st.caption</span>(<span class="str">"I am small grey text — good for footnotes or hints."</span>)
+
+<span class="cm"># ── CODE: Shows code with syntax highlighting ───────────────</span>
+<span class="fn">st.code</span>(<span class="str">"""
+def greet(name):
+    return f"Hello, {name}!"
+"""</span>, language=<span class="str">"python"</span>)
+
+<span class="cm"># ── DIVIDER: A horizontal line to separate sections ─────────</span>
+<span class="fn">st.divider</span>()   <span class="cm"># Draws a horizontal line</span>
+
+<span class="cm"># ── LATEX: For math formulas ─────────────────────────────────</span>
+<span class="fn">st.latex</span>(<span class="str">r"E = mc^2"</span>)  <span class="cm"># Shows Einstein's formula beautifully!</span></pre>
+  </div>
+
+  <p>Let's understand each one clearly:</p>
+
+  <table>
+    <thead><tr><th>Function</th><th>Think of it as...</th><th>When to use</th></tr></thead>
+    <tbody>
+      <tr><td><code>st.title()</code></td><td>The book's cover title</td><td>Page main heading, once per page</td></tr>
+      <tr><td><code>st.header()</code></td><td>Chapter name</td><td>Major section headings</td></tr>
+      <tr><td><code>st.subheader()</code></td><td>Section within chapter</td><td>Sub-sections</td></tr>
+      <tr><td><code>st.write()</code></td><td>A magic pen — writes anything</td><td>General use, most flexible</td></tr>
+      <tr><td><code>st.text()</code></td><td>Typewriter text</td><td>Showing raw/fixed-width text</td></tr>
+      <tr><td><code>st.markdown()</code></td><td>Word processor with formatting</td><td>Bold, italic, lists, links</td></tr>
+      <tr><td><code>st.caption()</code></td><td>Photo caption or footnote</td><td>Small explanatory text</td></tr>
+      <tr><td><code>st.code()</code></td><td>Code editor view</td><td>Displaying code snippets</td></tr>
+      <tr><td><code>st.divider()</code></td><td>A ruled line in a notebook</td><td>Separating content visually</td></tr>
+      <tr><td><code>st.latex()</code></td><td>Scientific journal formula</td><td>Math equations</td></tr>
+    </tbody>
+  </table>
+
+  <div class="box think">
+    <div class="box-label">🤔 What is Markdown?</div>
+    Markdown is a simple way to format text using special characters. For example:<br/>
+    <code>**bold**</code> becomes <strong>bold</strong><br/>
+    <code>*italic*</code> becomes <em>italic</em><br/>
+    <code># Heading</code> becomes a big heading<br/>
+    <code>- item</code> becomes a bullet point<br/><br/>
+    <code>st.markdown()</code> understands these and converts them to beautiful formatted text on the page!
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────── -->
+<div class="lesson" id="run">
+  <div class="lesson-num">Lesson 07</div>
+  <h2>Running the App & Hot Reload 🔥</h2>
+
+  <p>Now let's run your app. Open your terminal, navigate to the folder where your <code>app.py</code> file is, and type:</p>
+
+  <div class="code-wrap">
+    <div class="code-header">
+      <span class="code-lang">terminal</span>
+      <div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+    </div>
+    <pre>streamlit run app.py</pre>
+  </div>
+
+  <p>What happens next?</p>
+  <ul class="steps">
+    <li>Streamlit starts a server on your computer.</li>
+    <li>Your browser opens automatically at <code>http://localhost:8501</code></li>
+    <li>You see your web app displayed in the browser!</li>
+  </ul>
+
+  <div class="analogy">
+    <div class="analogy-label">🔥 Hot Reload — The Developer's Best Friend</div>
+    Here is the amazing part: <strong>you don't need to stop and restart the app when you make changes!</strong><br/><br/>
+    When you save your <code>app.py</code> file after editing it, Streamlit will detect the change and show a message at the top of the browser: <em>"Source file changed. Rerun?"</em>. Click <strong>Always Rerun</strong> once, and from that point on, every time you save your file, the browser automatically updates! It's like magic!
+  </div>
+
+  <p>To stop the app: go back to the terminal and press <code>Ctrl + C</code>.</p>
+
+  <div class="box tip">
+    <div class="box-label">💡 Useful URLs when the app is running</div>
+    <strong>Local URL:</strong> <code>http://localhost:8501</code> — Open this on your own computer.<br/>
+    <strong>Network URL:</strong> <code>http://192.168.x.x:8501</code> — Share this with anyone on your same WiFi network to show them your app live!
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────── -->
+<div class="lesson" id="cheat">
+  <div class="lesson-num">Lesson 08</div>
+  <h2>Day 1 Cheat Sheet 📋</h2>
+
+  <div class="cheat">
+    <div class="cheat-title">⚡ Quick Reference — Streamlit Day 1</div>
+
+    <div class="cheat-row">
+      <div class="cheat-code">pip install streamlit</div>
+      <div class="cheat-desc">Install Streamlit</div>
+    </div>
+    <div class="cheat-row">
+      <div class="cheat-code">streamlit run app.py</div>
+      <div class="cheat-desc">Run your Streamlit app</div>
+    </div>
+    <div class="cheat-row">
+      <div class="cheat-code">import streamlit as st</div>
+      <div class="cheat-desc">Import Streamlit with alias</div>
+    </div>
+    <div class="cheat-row">
+      <div class="cheat-code">st.title("text")</div>
+      <div class="cheat-desc">Biggest heading on page</div>
+    </div>
+    <div class="cheat-row">
+      <div class="cheat-code">st.header("text")</div>
+      <div class="cheat-desc">Second-level heading</div>
+    </div>
+    <div class="cheat-row">
+      <div class="cheat-code">st.subheader("text")</div>
+      <div class="cheat-desc">Third-level heading</div>
+    </div>
+    <div class="cheat-row">
+      <div class="cheat-code">st.write(...)</div>
+      <div class="cheat-desc">Display anything — text, numbers, lists</div>
+    </div>
+    <div class="cheat-row">
+      <div class="cheat-code">st.text("text")</div>
+      <div class="cheat-desc">Plain monospace text</div>
+    </div>
+    <div class="cheat-row">
+      <div class="cheat-code">st.markdown("**bold**")</div>
+      <div class="cheat-desc">Formatted text with Markdown</div>
+    </div>
+    <div class="cheat-row">
+      <div class="cheat-code">st.caption("hint")</div>
+      <div class="cheat-desc">Small grey caption text</div>
+    </div>
+    <div class="cheat-row">
+      <div class="cheat-code">st.code("...", language="python")</div>
+      <div class="cheat-desc">Display code with highlighting</div>
+    </div>
+    <div class="cheat-row">
+      <div class="cheat-code">st.divider()</div>
+      <div class="cheat-desc">Horizontal separator line</div>
+    </div>
+    <div class="cheat-row">
+      <div class="cheat-code">st.latex(r"formula")</div>
+      <div class="cheat-desc">Math formula rendering</div>
+    </div>
+    <div class="cheat-row">
+      <div class="cheat-code">Ctrl + C (in terminal)</div>
+      <div class="cheat-desc">Stop the running app</div>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────── -->
+<div class="lesson" id="quiz">
+  <div class="lesson-num">Lesson 09</div>
+  <h2>Mini Quiz 🧠</h2>
+
+  <div class="quiz">
+    <div class="quiz-title">✏️ Test Yourself — Day 1</div>
+    <ol>
+      <li>What command do you use to install Streamlit?</li>
+      <li>What command starts a Streamlit app called <code>my_app.py</code>?</li>
+      <li>What does <code>import streamlit as st</code> mean? Why do we write <code>as st</code>?</li>
+      <li>What is the difference between <code>st.title()</code> and <code>st.header()</code>?</li>
+      <li>Which function is the most flexible — can show text, numbers, AND lists?</li>
+      <li>What happens to your Streamlit app when a user interacts with it (clicks a button)?</li>
+      <li>What is "hot reload" in Streamlit?</li>
+      <li>True or False: <code>st.markdown("**hello**")</code> will display the word <em>hello</em> in bold.</li>
+    </ol>
+
+    <details class="quiz-ans">
+      <summary>👀 Reveal Answers</summary>
+      <ol style="margin-top:0.8rem; margin-left:1.2rem; font-size:0.88rem; color:#155724;">
+        <li><code>pip install streamlit</code></li>
+        <li><code>streamlit run my_app.py</code></li>
+        <li>It imports the Streamlit library. <code>as st</code> gives it a short nickname so we don't have to type "streamlit" every time.</li>
+        <li><code>st.title()</code> is the biggest heading (like a book title). <code>st.header()</code> is slightly smaller (like a chapter heading).</li>
+        <li><code>st.write()</code> — it can display almost anything!</li>
+        <li>The entire Python script reruns from top to bottom.</li>
+        <li>Hot reload = when you save your Python file, the browser automatically refreshes to show the latest version without restarting the server.</li>
+        <li>True! <code>**text**</code> in Markdown means bold.</li>
+      </ol>
+    </details>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────── -->
+<div class="lesson" id="hw">
+  <div class="lesson-num">Lesson 10</div>
+  <h2>Homework 🏠</h2>
+
+  <div class="homework">
+    <div class="hw-title">📌 Day 1 Homework</div>
+    <div class="hw-subtitle">// complete before Day 2 · estimated 20–30 mins</div>
+    <ul class="hw-list">
+      <li>Install Streamlit on your computer if you haven't already. Verify with <code>streamlit --version</code>.</li>
+      <li>Create a file called <code>day1_practice.py</code> and build a mini personal profile page with: your name as the title, a subheader showing your job role, and 3 <code>st.write()</code> lines about yourself.</li>
+      <li>Use <code>st.markdown()</code> to add at least one <strong>bold</strong> text and one <em>italic</em> text.</li>
+      <li>Add a <code>st.divider()</code> between two sections of content.</li>
+      <li>Use <code>st.code()</code> to show a small Python code snippet (any function you know).</li>
+      <li><strong>Bonus Challenge:</strong> Display a Python list using <code>st.write()</code> and see how Streamlit renders it. Try a dictionary too!</li>
+    </ul>
+  </div>
+
+  <div class="box tip">
+    <div class="box-label">👨‍🏫 Trainer's Note</div>
+    Don't worry if everything doesn't work perfectly on the first try. The goal today is just to <strong>get Streamlit running and display text on screen</strong>. That's a huge first step! Tomorrow we'll learn about interactive widgets — buttons, sliders, text boxes — and your apps will start to feel truly alive!
+  </div>
+
+  <p style="margin-top:1.5rem; color:var(--muted); font-size:0.9rem;">
+    📅 <strong>Coming up on Day 2:</strong> Interactive Widgets — <code>st.button()</code>, <code>st.text_input()</code>, <code>st.slider()</code>, <code>st.selectbox()</code>, <code>st.checkbox()</code> and how to react to user input!
+  </p>
+</div>
+
+</main>
+
+<footer>
+  <p>🐍 Python Trainer Series &nbsp;·&nbsp; <span>Streamlit in 30 Days</span> &nbsp;·&nbsp; Day 1 of 30</p>
+  <p style="margin-top:0.4rem;">Personalised notes for Umakant Pandey &nbsp;·&nbsp; Keep practising every day!</p>
+</footer>
+
+</body>
+</html>
