@@ -1,13 +1,772 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Streamlit – Day 2 Notes | Interactive Widgets</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Lora:ital,wght@0,400;0,600;1,400&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#f7f3ee;--paper:#fffdf9;--ink:#1a1410;--muted:#7a6f65;--accent:#c0392b;--accent2:#2471a3;--highlight:#f9e79f;--code-bg:#1e1e2e;--code-fg:#cdd6f4;--border:#e0d8ce;--note-bg:#eaf4fb;--note-border:#2471a3;--tip-bg:#e9f7ef;--tip-border:#27ae60;--warn-bg:#fef9e7;--warn-border:#f39c12;}
+*{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--ink);font-family:'Lora',Georgia,serif;font-size:17px;line-height:1.85;}
+nav{position:sticky;top:0;z-index:100;background:var(--ink);padding:0.7rem 2rem;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px rgba(0,0,0,0.3);}
+.nav-brand{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:#fff;letter-spacing:0.05em;}.nav-brand span{color:#e74c3c;}
+.nav-day{font-family:'Fira Code',monospace;font-size:0.75rem;color:#aaa;background:rgba(255,255,255,0.07);border-radius:20px;padding:0.25rem 0.8rem;}
+.hero{background:linear-gradient(135deg,#1a1410 0%,#12243a 100%);color:#fff;padding:4rem 5rem 3.5rem;position:relative;overflow:hidden;}
+.hero::before{content:"";position:absolute;top:-60px;right:-60px;width:350px;height:350px;border-radius:50%;background:radial-gradient(circle,rgba(36,113,163,0.3) 0%,transparent 70%);}
+.hero::after{content:"";position:absolute;bottom:-80px;left:5%;width:250px;height:250px;border-radius:50%;background:radial-gradient(circle,rgba(192,57,43,0.15) 0%,transparent 70%);}
+.hero-eyebrow{font-family:'Fira Code',monospace;font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:#5dade2;margin-bottom:0.8rem;}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(2.2rem,5vw,3.6rem);font-weight:800;line-height:1.1;margin-bottom:0.8rem;letter-spacing:-0.02em;}
+.hero h1 em{color:#5dade2;font-style:normal;}
+.hero p{color:#bbb;font-family:'Lora',serif;font-size:1rem;max-width:600px;margin-bottom:1.5rem;}
+.hero-pills{display:flex;flex-wrap:wrap;gap:0.5rem;}
+.pill{font-family:'Fira Code',monospace;font-size:0.72rem;padding:0.3rem 0.8rem;border-radius:20px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#ddd;}
+.progress-section{background:var(--paper);border-bottom:1px solid var(--border);padding:1.2rem 5rem;}
+.progress-label{font-family:'Fira Code',monospace;font-size:0.72rem;color:var(--muted);margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.1em;}
+.progress-track{display:flex;gap:0.3rem;align-items:center;}
+.prog-day{flex:1;height:6px;border-radius:3px;background:var(--border);}
+.prog-day.done{background:var(--accent);}
+.prog-day.current{background:var(--accent2);}
+.prog-nums{font-family:'Fira Code',monospace;font-size:0.7rem;color:var(--muted);margin-left:0.6rem;}
+.toc-wrap{max-width:860px;margin:2.5rem auto;padding:0 2rem;}
+.toc-card{background:var(--paper);border:1px solid var(--border);border-radius:12px;padding:1.5rem 2rem;}
+.toc-title{font-family:'Syne',sans-serif;font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);margin-bottom:1rem;}
+.toc-list{list-style:none;}
+.toc-list li{display:flex;align-items:center;gap:0.6rem;padding:0.35rem 0;border-bottom:1px dashed var(--border);font-size:0.92rem;}
+.toc-list li:last-child{border-bottom:none;}
+.toc-num{font-family:'Fira Code',monospace;font-size:0.7rem;color:var(--accent);min-width:28px;}
+.toc-list a{color:var(--ink);text-decoration:none;}.toc-list a:hover{color:var(--accent);}
+main{max-width:860px;margin:0 auto;padding:0 2rem 4rem;}
+.lesson{margin-top:3rem;padding-top:2rem;border-top:2px solid var(--border);}
+.lesson:first-of-type{border-top:none;}
+.lesson-num{font-family:'Fira Code',monospace;font-size:0.7rem;color:var(--accent);text-transform:uppercase;letter-spacing:0.15em;margin-bottom:0.4rem;}
+.lesson h2{font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:800;color:var(--ink);margin-bottom:1rem;line-height:1.15;}
+p{margin-bottom:1rem;color:#2c2825;}
+.box{border-left:4px solid;border-radius:0 10px 10px 0;padding:1rem 1.3rem;margin:1.5rem 0;font-size:0.93rem;}
+.box-label{font-family:'Syne',sans-serif;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:0.4rem;}
+.note{background:var(--note-bg);border-color:var(--note-border);}.note .box-label{color:var(--note-border);}
+.tip{background:var(--tip-bg);border-color:var(--tip-border);}.tip .box-label{color:var(--tip-border);}
+.warn{background:var(--warn-bg);border-color:var(--warn-border);}.warn .box-label{color:var(--warn-border);}
+.think{background:#f5eef8;border-color:#8e44ad;}.think .box-label{color:#8e44ad;}
+.analogy{background:var(--highlight);border:1px solid #f0c840;border-radius:10px;padding:1rem 1.3rem;margin:1.5rem 0;font-size:0.93rem;}
+.analogy-label{font-family:'Syne',sans-serif;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#9a7d0a;margin-bottom:0.3rem;}
+.code-wrap{background:var(--code-bg);border-radius:10px;overflow:hidden;margin:1.5rem 0;box-shadow:0 4px 20px rgba(0,0,0,0.2);}
+.code-header{background:#161622;padding:0.55rem 1.2rem;display:flex;justify-content:space-between;align-items:center;}
+.code-lang{font-family:'Fira Code',monospace;font-size:0.68rem;color:#6c7086;text-transform:uppercase;letter-spacing:0.1em;}
+.code-dots{display:flex;gap:5px;}.code-dots span{width:10px;height:10px;border-radius:50%;}
+.dot-r{background:#ff5f57;}.dot-y{background:#febc2e;}.dot-g{background:#28c840;}
+pre{padding:1.3rem 1.5rem;overflow-x:auto;font-family:'Fira Code',monospace;font-size:0.84rem;line-height:1.7;color:var(--code-fg);}
+.kw{color:#cba6f7;}.fn{color:#89b4fa;}.str{color:#a6e3a1;}.cm{color:#6c7086;font-style:italic;}.num{color:#fab387;}.var{color:#f38ba8;}.cls{color:#f9e2af;}.op{color:#89dceb;}
+table{width:100%;border-collapse:collapse;margin:1.5rem 0;font-size:0.88rem;}
+th{background:var(--ink);color:#fff;font-family:'Syne',sans-serif;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;padding:0.6rem 1rem;text-align:left;}
+td{padding:0.6rem 1rem;border-bottom:1px solid var(--border);background:var(--paper);vertical-align:top;}
+tr:nth-child(even) td{background:#f5f0ea;}
+td code{font-family:'Fira Code',monospace;font-size:0.8rem;background:var(--bg);padding:0.1rem 0.4rem;border-radius:4px;color:var(--accent);}
+.steps{counter-reset:step;list-style:none;margin:1.2rem 0;}
+.steps li{counter-increment:step;display:flex;gap:1rem;margin-bottom:1rem;align-items:flex-start;}
+.steps li::before{content:counter(step);min-width:28px;height:28px;background:var(--accent);color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:0.78rem;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:0.1rem;}
+.quiz{background:var(--paper);border:2px solid var(--ink);border-radius:12px;padding:1.5rem 2rem;margin:2rem 0;}
+.quiz-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;}
+.quiz ol{margin-left:1.2rem;font-size:0.9rem;}.quiz li{margin-bottom:0.5rem;}
+.quiz-ans{margin-top:1rem;padding:0.8rem 1rem;background:var(--tip-bg);border-radius:8px;font-size:0.85rem;border:1px solid var(--tip-border);}
+.quiz-ans summary{font-family:'Syne',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;color:var(--tip-border);text-transform:uppercase;letter-spacing:0.08em;}
+.cheat{background:var(--ink);color:#e2e8f0;border-radius:12px;padding:1.8rem 2rem;margin:2rem 0;}
+.cheat-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:#e74c3c;margin-bottom:1rem;border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:0.5rem;}
+.cheat-row{display:grid;grid-template-columns:260px 1fr;gap:0.5rem 1rem;margin-bottom:0.6rem;font-size:0.85rem;align-items:start;}
+.cheat-code{font-family:'Fira Code',monospace;color:#f9e2af;font-size:0.78rem;}
+.cheat-desc{color:#94a3b8;}
+.cheat-section{font-family:'Syne',sans-serif;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#5dade2;margin:1rem 0 0.5rem;padding-top:0.8rem;border-top:1px solid rgba(255,255,255,0.08);}
+.homework{background:linear-gradient(135deg,#1a1410 0%,#12243a 100%);color:#e2e8f0;border-radius:12px;padding:2rem 2.2rem;margin:2.5rem 0;}
+.hw-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:#5dade2;margin-bottom:0.3rem;}
+.hw-subtitle{font-size:0.8rem;color:#888;font-family:'Fira Code',monospace;margin-bottom:1.2rem;}
+.hw-list{list-style:none;}
+.hw-list li{padding:0.5rem 0;border-bottom:1px solid rgba(255,255,255,0.07);font-size:0.9rem;display:flex;gap:0.6rem;align-items:flex-start;}
+.hw-list li::before{content:"▸";color:#5dade2;flex-shrink:0;margin-top:0.1rem;}
+footer{background:var(--ink);color:#666;text-align:center;padding:2rem;font-family:'Fira Code',monospace;font-size:0.75rem;}
+footer span{color:#5dade2;}
+code{font-family:'Fira Code',monospace;font-size:0.83em;background:#ede8e2;color:var(--accent);padding:0.1rem 0.4rem;border-radius:4px;}
+mark{background:var(--highlight);padding:0 0.2rem;border-radius:3px;}
+@media(max-width:680px){.hero,.progress-section{padding-left:1.5rem;padding-right:1.5rem;}main,.toc-wrap{padding-left:1.2rem;padding-right:1.2rem;}.hero h1{font-size:2rem;}.cheat-row{grid-template-columns:1fr;}}
+</style>
 </head>
 <body>
+
+<nav>
+  <div class="nav-brand">🐍 <span>Python</span> Trainer</div>
+  <div class="nav-day">📅 Day 2 of 30 — Streamlit</div>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">// Your Personal Python Trainer · Streamlit Series</div>
+  <h1>Day 2: <em>Interactive Widgets</em><br/>Making Apps Come Alive</h1>
+  <p>Today we move from static text to real interaction. Buttons, sliders, text inputs, dropdowns — your app will start talking back to users!</p>
+  <div class="hero-pills">
+    <span class="pill">🕐 ~60 min read</span>
+    <span class="pill">🟡 Intermediate</span>
+    <span class="pill">💻 10 code examples</span>
+    <span class="pill">🏗️ Mini Project included</span>
+    <span class="pill">📝 Quiz + Homework</span>
+  </div>
+</div>
+
+<div class="progress-section">
+  <div class="progress-label">Your 30-Day Streamlit Journey</div>
+  <div class="progress-track">
+    <div class="prog-day done"></div>
+    <div class="prog-day current"></div>
+    <div class="prog-day"></div><div class="prog-day"></div><div class="prog-day"></div>
+    <div class="prog-day"></div><div class="prog-day"></div><div class="prog-day"></div>
+    <div class="prog-day"></div><div class="prog-day"></div><div class="prog-day"></div>
+    <div class="prog-day"></div><div class="prog-day"></div><div class="prog-day"></div>
+    <div class="prog-day"></div><div class="prog-day"></div><div class="prog-day"></div>
+    <div class="prog-day"></div><div class="prog-day"></div><div class="prog-day"></div>
+    <div class="prog-day"></div><div class="prog-day"></div><div class="prog-day"></div>
+    <div class="prog-day"></div><div class="prog-day"></div><div class="prog-day"></div>
+    <div class="prog-day"></div><div class="prog-day"></div><div class="prog-day"></div>
+    <div class="prog-nums">2 / 30</div>
+  </div>
+</div>
+
+<div class="toc-wrap">
+  <div class="toc-card">
+    <div class="toc-title">📚 Today's Lessons</div>
+    <ul class="toc-list">
+      <li><span class="toc-num">01</span><a href="#concept">The KEY Concept — What Widgets Return</a></li>
+      <li><span class="toc-num">02</span><a href="#button">st.button() — Click Me!</a></li>
+      <li><span class="toc-num">03</span><a href="#textinput">st.text_input() — Single Line Text Box</a></li>
+      <li><span class="toc-num">04</span><a href="#textarea">st.text_area() — Multi-line Text Box</a></li>
+      <li><span class="toc-num">05</span><a href="#number">st.number_input() — Number Field</a></li>
+      <li><span class="toc-num">06</span><a href="#slider">st.slider() — Drag to Pick a Value</a></li>
+      <li><span class="toc-num">07</span><a href="#selectbox">st.selectbox() — Dropdown Menu</a></li>
+      <li><span class="toc-num">08</span><a href="#multiselect">st.multiselect() — Choose Many Options</a></li>
+      <li><span class="toc-num">09</span><a href="#checkbox">st.checkbox() — On/Off Toggle</a></li>
+      <li><span class="toc-num">10</span><a href="#radio">st.radio() — Pick One from a Visible List</a></li>
+      <li><span class="toc-num">11</span><a href="#date">st.date_input() and st.time_input()</a></li>
+      <li><span class="toc-num">12</span><a href="#project">🏗️ Mini Project — Calculator App</a></li>
+      <li><span class="toc-num">13</span><a href="#cheat">Day 2 Cheat Sheet</a></li>
+      <li><span class="toc-num">14</span><a href="#quiz">Mini Quiz</a></li>
+      <li><span class="toc-num">15</span><a href="#hw">Homework</a></li>
+    </ul>
+  </div>
+</div>
+
+<main>
+
+<!-- L01 -->
+<div class="lesson" id="concept">
+  <div class="lesson-num">Lesson 01</div>
+  <h2>The KEY Concept — What Widgets Return 🔑</h2>
+  <p>Before learning any individual widget, you <strong>must</strong> understand this one golden rule. Everything today builds on it.</p>
+  <div class="analogy">
+    <div class="analogy-label">🎰 Analogy — The Vending Machine</div>
+    A vending machine is a widget. You press a button (interact), and it <strong>gives you something back</strong> — a snack (a value). In Streamlit, every widget is like a vending machine. You place it on the page, the user interacts, and it <strong>returns a Python value</strong> to your script. You capture that value in a variable, then use it in your code!
+  </div>
+  <p>Every single widget follows this same pattern. Study it — <mark>this is the most important line in all of Streamlit:</mark></p>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">python — the universal widget pattern</span><div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div></div>
+    <pre><span class="cm"># PATTERN:  variable = st.widget_name("label shown to user")</span>
+
+<span class="var">user_value</span> <span class="op">=</span> <span class="fn">st.some_widget</span>(<span class="str">"Label shown to user"</span>)
+
+<span class="cm"># Now "user_value" holds whatever the user picked / typed / selected</span>
+<span class="cm"># Use it in any Python logic below!</span>
+
+<span class="fn">st.write</span>(<span class="str">"You chose:"</span>, <span class="var">user_value</span>)</pre>
+  </div>
+  <div class="box note">
+    <div class="box-label">📘 Remember from Day 1</div>
+    When a user interacts with a widget, Streamlit <strong>reruns the whole script</strong>. But the widget remembers the user's last choice and returns it again automatically. So your variable always holds the latest value!
+  </div>
+</div>
+
+<!-- L02 -->
+<div class="lesson" id="button">
+  <div class="lesson-num">Lesson 02</div>
+  <h2>st.button() — Click Me! 🔘</h2>
+  <p>The most basic widget. A clickable button. Returns <code>True</code> when clicked. Returns <code>False</code> when not clicked.</p>
+  <div class="analogy">
+    <div class="analogy-label">🚪 Analogy — A Doorbell</div>
+    A doorbell returns a signal <strong>only when someone presses it</strong>. The moment they stop, the signal is gone. <code>st.button()</code> works the same way — it is <code>True</code> only during the exact rerun triggered by the click. Next rerun, it goes back to <code>False</code>.
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">python — button_demo.py</span><div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div></div>
+    <pre><span class="kw">import</span> <span class="cls">streamlit</span> <span class="kw">as</span> <span class="var">st</span>
+
+<span class="fn">st.title</span>(<span class="str">"Button Demo"</span>)
+
+<span class="cm"># Basic button — True when clicked, False otherwise</span>
+<span class="var">clicked</span> <span class="op">=</span> <span class="fn">st.button</span>(<span class="str">"Click Me!"</span>)
+
+<span class="kw">if</span> <span class="var">clicked</span>:
+    <span class="fn">st.write</span>(<span class="str">"🎉 You clicked it! clicked ="</span>, <span class="var">clicked</span>)
+<span class="kw">else</span>:
+    <span class="fn">st.write</span>(<span class="str">"Button not clicked. clicked ="</span>, <span class="var">clicked</span>)
+
+<span class="fn">st.divider</span>()
+
+<span class="cm"># Show content only when clicked</span>
+<span class="kw">if</span> <span class="fn">st.button</span>(<span class="str">"Reveal My Name"</span>):
+    <span class="fn">st.success</span>(<span class="str">"My name is Umakant Pandey! 👋"</span>)
+
+<span class="fn">st.divider</span>()
+
+<span class="cm"># type="primary" makes it a bold coloured button</span>
+<span class="kw">if</span> <span class="fn">st.button</span>(<span class="str">"Submit Report"</span>, <span class="var">type</span><span class="op">=</span><span class="str">"primary"</span>):
+    <span class="fn">st.success</span>(<span class="str">"✅ Report submitted successfully!"</span>)
+
+<span class="cm"># disabled=True makes button unclickable (greyed out)</span>
+<span class="fn">st.button</span>(<span class="str">"I am disabled"</span>, <span class="var">disabled</span><span class="op">=</span><span class="kw">True</span>)</pre>
+  </div>
+  <table>
+    <thead><tr><th>Parameter</th><th>What it does</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td><code>label</code></td><td>Text shown on the button (required)</td><td><code>"Click Me"</code></td></tr>
+      <tr><td><code>type</code></td><td><code>"secondary"</code> (grey, default) or <code>"primary"</code> (blue/bold)</td><td><code>type="primary"</code></td></tr>
+      <tr><td><code>disabled</code></td><td>If <code>True</code>, button is greyed out and unclickable</td><td><code>disabled=True</code></td></tr>
+      <tr><td><code>help</code></td><td>Tooltip shown on hover</td><td><code>help="Submits the form"</code></td></tr>
+      <tr><td><strong>Returns</strong></td><td colspan="2"><code>True</code> when clicked, <code>False</code> otherwise</td></tr>
+    </tbody>
+  </table>
+  <div class="box tip">
+    <div class="box-label">💡 New functions sneak peek</div>
+    <code>st.success("text")</code> → green box &nbsp;|&nbsp; <code>st.error("text")</code> → red box &nbsp;|&nbsp; <code>st.warning("text")</code> → yellow box &nbsp;|&nbsp; <code>st.info("text")</code> → blue box. We will cover these fully on Day 3!
+  </div>
+</div>
+
+<!-- L03 -->
+<div class="lesson" id="textinput">
+  <div class="lesson-num">Lesson 03</div>
+  <h2>st.text_input() — Single Line Text Box ⌨️</h2>
+  <p>Creates a one-line input box where the user types text. Like a search bar or a login field. Returns a Python <code>str</code>.</p>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">python — text_input_demo.py</span><div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div></div>
+    <pre><span class="kw">import</span> <span class="cls">streamlit</span> <span class="kw">as</span> <span class="var">st</span>
+
+<span class="fn">st.title</span>(<span class="str">"Text Input Demo"</span>)
+
+<span class="cm"># Basic — returns "" when empty, or whatever user typed</span>
+<span class="var">name</span> <span class="op">=</span> <span class="fn">st.text_input</span>(<span class="str">"Enter your name:"</span>)
+
+<span class="kw">if</span> <span class="var">name</span>:          <span class="cm"># if name is NOT empty string</span>
+    <span class="fn">st.write</span>(<span class="str">f"Hello, {name}! Welcome to Streamlit! 👋"</span>)
+<span class="kw">else</span>:
+    <span class="fn">st.write</span>(<span class="str">"Please type your name above."</span>)
+
+<span class="fn">st.divider</span>()
+
+<span class="cm"># With value (pre-filled default) and placeholder (hint text)</span>
+<span class="var">city</span> <span class="op">=</span> <span class="fn">st.text_input</span>(
+    <span class="str">"Your city:"</span>,
+    <span class="var">value</span><span class="op">=</span><span class="str">"New Delhi"</span>,           <span class="cm"># Already filled on load</span>
+    <span class="var">placeholder</span><span class="op">=</span><span class="str">"Type city name..."</span>, <span class="cm"># Grey hint text</span>
+    <span class="var">max_chars</span><span class="op">=</span><span class="num">50</span>                 <span class="cm"># Can't type more than 50 chars</span>
+)
+<span class="fn">st.write</span>(<span class="str">"City entered:"</span>, <span class="var">city</span>)
+
+<span class="fn">st.divider</span>()
+
+<span class="cm"># Password field — hides what the user types!</span>
+<span class="var">password</span> <span class="op">=</span> <span class="fn">st.text_input</span>(<span class="str">"Enter password:"</span>, <span class="var">type</span><span class="op">=</span><span class="str">"password"</span>)
+<span class="kw">if</span> <span class="var">password</span>:
+    <span class="fn">st.write</span>(<span class="str">"Password length:"</span>, <span class="fn">len</span>(<span class="var">password</span>), <span class="str">"characters"</span>)</pre>
+  </div>
+  <table>
+    <thead><tr><th>Parameter</th><th>What it does</th><th>Default</th></tr></thead>
+    <tbody>
+      <tr><td><code>label</code></td><td>Text shown above the input box (required)</td><td>—</td></tr>
+      <tr><td><code>value</code></td><td>Pre-filled text when app loads</td><td><code>""</code></td></tr>
+      <tr><td><code>placeholder</code></td><td>Grey hint text that disappears when user types</td><td><code>""</code></td></tr>
+      <tr><td><code>type</code></td><td><code>"default"</code> (visible) or <code>"password"</code> (hidden dots)</td><td><code>"default"</code></td></tr>
+      <tr><td><code>max_chars</code></td><td>Maximum characters the user can type</td><td><code>None</code></td></tr>
+      <tr><td><strong>Returns</strong></td><td colspan="2">A <code>str</code> — whatever the user typed</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- L04 -->
+<div class="lesson" id="textarea">
+  <div class="lesson-num">Lesson 04</div>
+  <h2>st.text_area() — Multi-line Text Box 📄</h2>
+  <p><code>st.text_input()</code> = one line (search bar). <code>st.text_area()</code> = a big box for long writing — like a comment field, notepad, or message form.</p>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">python — textarea_demo.py</span><div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div></div>
+    <pre><span class="kw">import</span> <span class="cls">streamlit</span> <span class="kw">as</span> <span class="var">st</span>
+
+<span class="fn">st.title</span>(<span class="str">"Text Area Demo"</span>)
+
+<span class="var">feedback</span> <span class="op">=</span> <span class="fn">st.text_area</span>(
+    <span class="str">"Write your feedback:"</span>,
+    <span class="var">placeholder</span><span class="op">=</span><span class="str">"Tell us what you think..."</span>,
+    <span class="var">height</span><span class="op">=</span><span class="num">150</span>   <span class="cm"># Height of the text box in pixels</span>
+)
+
+<span class="kw">if</span> <span class="var">feedback</span>:
+    <span class="var">word_count</span> <span class="op">=</span> <span class="fn">len</span>(<span class="var">feedback</span>.<span class="fn">split</span>())
+    <span class="var">char_count</span> <span class="op">=</span> <span class="fn">len</span>(<span class="var">feedback</span>)
+    <span class="fn">st.write</span>(<span class="str">f"Words: {word_count}  |  Characters: {char_count}"</span>)
+    <span class="fn">st.info</span>(<span class="var">feedback</span>)  <span class="cm"># Show feedback in a blue box</span></pre>
+  </div>
+  <div class="box note">
+    <div class="box-label">📘 text_input vs text_area — Quick rule</div>
+    Use <code>st.text_input()</code> for short answers: name, email, search query, one word.<br/>
+    Use <code>st.text_area()</code> for long answers: comments, bug descriptions, messages, test notes.
+  </div>
+</div>
+
+<!-- L05 -->
+<div class="lesson" id="number">
+  <div class="lesson-num">Lesson 05</div>
+  <h2>st.number_input() — Number Field 🔢</h2>
+  <p>A text box built specifically for numbers. Has up/down arrows. Prevents the user from typing letters. Returns an <code>int</code> or <code>float</code>.</p>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">python — number_input_demo.py</span><div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div></div>
+    <pre><span class="kw">import</span> <span class="cls">streamlit</span> <span class="kw">as</span> <span class="var">st</span>
+
+<span class="fn">st.title</span>(<span class="str">"Number Input Demo"</span>)
+
+<span class="cm"># Integer number</span>
+<span class="var">age</span> <span class="op">=</span> <span class="fn">st.number_input</span>(
+    <span class="str">"Enter your age:"</span>,
+    <span class="var">min_value</span><span class="op">=</span><span class="num">1</span>,       <span class="cm"># Can't go below 1</span>
+    <span class="var">max_value</span><span class="op">=</span><span class="num">120</span>,     <span class="cm"># Can't go above 120</span>
+    <span class="var">value</span><span class="op">=</span><span class="num">25</span>,          <span class="cm"># Default value</span>
+    <span class="var">step</span><span class="op">=</span><span class="num">1</span>             <span class="cm"># Each arrow click adds/subtracts 1</span>
+)
+<span class="fn">st.write</span>(<span class="str">f"You are {age} years old."</span>)
+
+<span class="fn">st.divider</span>()
+
+<span class="cm"># Float (decimal) number</span>
+<span class="var">salary</span> <span class="op">=</span> <span class="fn">st.number_input</span>(
+    <span class="str">"Monthly salary (INR):"</span>,
+    <span class="var">min_value</span><span class="op">=</span><span class="num">0.0</span>,
+    <span class="var">value</span><span class="op">=</span><span class="num">50000.0</span>,
+    <span class="var">step</span><span class="op">=</span><span class="num">1000.0</span>,
+    <span class="var">format</span><span class="op">=</span><span class="str">"%.2f"</span>    <span class="cm"># Show exactly 2 decimal places</span>
+)
+<span class="var">annual</span> <span class="op">=</span> <span class="var">salary</span> <span class="op">*</span> <span class="num">12</span>
+<span class="fn">st.write</span>(<span class="str">f"Annual CTC: ₹{annual:,.0f}"</span>)</pre>
+  </div>
+  <table>
+    <thead><tr><th>Parameter</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><code>min_value</code></td><td>Lowest number allowed</td></tr>
+      <tr><td><code>max_value</code></td><td>Highest number allowed</td></tr>
+      <tr><td><code>value</code></td><td>Default number shown at start</td></tr>
+      <tr><td><code>step</code></td><td>How much each arrow click changes. Use <code>1</code> for integer, <code>0.5</code> for float</td></tr>
+      <tr><td><code>format</code></td><td>Display format string. <code>"%.2f"</code> = 2 decimal places</td></tr>
+      <tr><td><strong>Returns</strong></td><td><code>int</code> if step is integer, <code>float</code> if step is decimal</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- L06 -->
+<div class="lesson" id="slider">
+  <div class="lesson-num">Lesson 06</div>
+  <h2>st.slider() — Drag to Pick a Value 🎚️</h2>
+  <p>A draggable bar. User slides left or right to pick a value. More visual and satisfying than a number input.</p>
+  <div class="analogy">
+    <div class="analogy-label">🔊 Analogy — Volume Dial</div>
+    Think of a speaker's volume dial. You drag it between Min and Max to set your level. <code>st.slider()</code> is exactly that — a dial for any numeric value in your app.
+  </div>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">python — slider_demo.py</span><div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div></div>
+    <pre><span class="kw">import</span> <span class="cls">streamlit</span> <span class="kw">as</span> <span class="var">st</span>
+
+<span class="fn">st.title</span>(<span class="str">"Slider Demo"</span>)
+
+<span class="cm"># Single value slider</span>
+<span class="cm"># Arguments in order: label, min, max, default value</span>
+<span class="var">age</span> <span class="op">=</span> <span class="fn">st.slider</span>(<span class="str">"Select your age:"</span>, <span class="num">1</span>, <span class="num">100</span>, <span class="num">25</span>)
+<span class="fn">st.write</span>(<span class="str">f"Age: {age}"</span>)
+
+<span class="fn">st.divider</span>()
+
+<span class="cm"># Range slider — pass a TUPLE as default value!</span>
+<span class="cm"># Returns a tuple (low, high) — two handles appear</span>
+<span class="var">salary_range</span> <span class="op">=</span> <span class="fn">st.slider</span>(
+    <span class="str">"Expected salary range (₹K):"</span>,
+    <span class="var">min_value</span><span class="op">=</span><span class="num">10</span>,
+    <span class="var">max_value</span><span class="op">=</span><span class="num">200</span>,
+    <span class="var">value</span><span class="op">=</span>(<span class="num">30</span>, <span class="num">80</span>)   <span class="cm"># Tuple = range slider with 2 handles!</span>
+)
+<span class="fn">st.write</span>(<span class="str">f"Looking for: ₹{salary_range[0]}K to ₹{salary_range[1]}K"</span>)
+
+<span class="fn">st.divider</span>()
+
+<span class="cm"># Float slider with step</span>
+<span class="var">rating</span> <span class="op">=</span> <span class="fn">st.slider</span>(<span class="str">"Rate this course:"</span>, <span class="num">0.0</span>, <span class="num">5.0</span>, <span class="num">4.5</span>, <span class="num">0.5</span>)
+<span class="cm">#                   label,             min,  max,  default, step</span>
+<span class="fn">st.write</span>(<span class="str">f"Rating: {'⭐' * int(rating)} ({rating}/5)"</span>)</pre>
+  </div>
+  <div class="box warn">
+    <div class="box-label">⚠️ Range Slider Trick</div>
+    Pass a <strong>tuple</strong> as the value — <code>value=(30, 80)</code> — and the slider becomes a range picker with two handles. It then returns a tuple <code>(low, high)</code>. Access the values with <code>range[0]</code> (low) and <code>range[1]</code> (high).
+  </div>
+</div>
+
+<!-- L07 -->
+<div class="lesson" id="selectbox">
+  <div class="lesson-num">Lesson 07</div>
+  <h2>st.selectbox() — Dropdown Menu 📋</h2>
+  <p>A dropdown list. User clicks to open it, picks one option. Returns the selected item.</p>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">python — selectbox_demo.py</span><div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div></div>
+    <pre><span class="kw">import</span> <span class="cls">streamlit</span> <span class="kw">as</span> <span class="var">st</span>
+
+<span class="fn">st.title</span>(<span class="str">"Selectbox Demo"</span>)
+
+<span class="cm"># Pass a list of options</span>
+<span class="var">dept</span> <span class="op">=</span> <span class="fn">st.selectbox</span>(
+    <span class="str">"Choose your department:"</span>,
+    [<span class="str">"QA Testing"</span>, <span class="str">"Development"</span>, <span class="str">"DevOps"</span>, <span class="str">"Management"</span>]
+)
+<span class="fn">st.write</span>(<span class="str">f"You selected: {dept}"</span>)
+
+<span class="fn">st.divider</span>()
+
+<span class="cm"># index=0 means first item is default</span>
+<span class="var">lang</span> <span class="op">=</span> <span class="fn">st.selectbox</span>(
+    <span class="str">"Favourite programming language:"</span>,
+    [<span class="str">"Python"</span>, <span class="str">"Java"</span>, <span class="str">"JavaScript"</span>, <span class="str">"SQL"</span>],
+    <span class="var">index</span><span class="op">=</span><span class="num">0</span>
+)
+
+<span class="cm"># Use selection in Python logic — like a switch/match!</span>
+<span class="var">tips</span> <span class="op">=</span> {
+    <span class="str">"Python"</span>:     <span class="str">"Great for data, automation, and QA scripting!"</span>,
+    <span class="str">"Java"</span>:       <span class="str">"Your Selenium scripts run on this!"</span>,
+    <span class="str">"JavaScript"</span>: <span class="str">"King of the browser — used in web testing."</span>,
+    <span class="str">"SQL"</span>:        <span class="str">"Essential for database testing — you already know this!"</span>
+}
+<span class="fn">st.info</span>(<span class="var">tips</span>[<span class="var">lang</span>])</pre>
+  </div>
+  <table>
+    <thead><tr><th>Parameter</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><code>label</code></td><td>Question shown above dropdown</td></tr>
+      <tr><td><code>options</code></td><td>A Python list of choices</td></tr>
+      <tr><td><code>index</code></td><td>Default selected item (0 = first item)</td></tr>
+      <tr><td><strong>Returns</strong></td><td>The selected item — same type as items in your list</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- L08 -->
+<div class="lesson" id="multiselect">
+  <div class="lesson-num">Lesson 08</div>
+  <h2>st.multiselect() — Choose Many Options ✅✅</h2>
+  <p>Like <code>selectbox</code> but the user can pick <strong>multiple</strong> items at once. Always returns a Python <strong>list</strong>.</p>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">python — multiselect_demo.py</span><div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div></div>
+    <pre><span class="kw">import</span> <span class="cls">streamlit</span> <span class="kw">as</span> <span class="var">st</span>
+
+<span class="fn">st.title</span>(<span class="str">"Multiselect Demo"</span>)
+
+<span class="var">skills</span> <span class="op">=</span> <span class="fn">st.multiselect</span>(
+    <span class="str">"Select your QA skills:"</span>,
+    [<span class="str">"Selenium"</span>, <span class="str">"Postman"</span>, <span class="str">"Jira"</span>, <span class="str">"SQL"</span>, <span class="str">"Jenkins"</span>, <span class="str">"Python"</span>, <span class="str">"TestNG"</span>],
+    <span class="var">default</span><span class="op">=</span>[<span class="str">"Selenium"</span>, <span class="str">"Postman"</span>]  <span class="cm"># Pre-selected items</span>
+)
+
+<span class="cm"># skills is ALWAYS a list</span>
+<span class="cm"># Empty selection → skills = []</span>
+<span class="cm"># 3 items picked → skills = ["Selenium", "SQL", "Python"]</span>
+
+<span class="kw">if</span> <span class="var">skills</span>:
+    <span class="fn">st.write</span>(<span class="str">f"You selected {len(skills)} skill(s):"</span>)
+    <span class="kw">for</span> <span class="var">skill</span> <span class="kw">in</span> <span class="var">skills</span>:
+        <span class="fn">st.write</span>(<span class="str">f"  ✅ {skill}"</span>)
+<span class="kw">else</span>:
+    <span class="fn">st.warning</span>(<span class="str">"Please select at least one skill!"</span>)</pre>
+  </div>
+  <div class="box note">
+    <div class="box-label">📘 selectbox vs multiselect — Key difference</div>
+    <code>st.selectbox()</code> → pick ONE → returns a single value (e.g. <code>"Python"</code>)<br/>
+    <code>st.multiselect()</code> → pick MANY → returns a list (e.g. <code>["Python", "SQL"]</code>)
+  </div>
+</div>
+
+<!-- L09 -->
+<div class="lesson" id="checkbox">
+  <div class="lesson-num">Lesson 09</div>
+  <h2>st.checkbox() — On/Off Toggle ☑️</h2>
+  <p>A simple tick box. Checked = <code>True</code>. Unchecked = <code>False</code>. Perfect for yes/no questions or to show/hide content.</p>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">python — checkbox_demo.py</span><div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div></div>
+    <pre><span class="kw">import</span> <span class="cls">streamlit</span> <span class="kw">as</span> <span class="var">st</span>
+
+<span class="fn">st.title</span>(<span class="str">"Checkbox Demo"</span>)
+
+<span class="cm"># Unchecked by default (value defaults to False)</span>
+<span class="var">agree</span> <span class="op">=</span> <span class="fn">st.checkbox</span>(<span class="str">"I agree to the terms and conditions"</span>)
+
+<span class="kw">if</span> <span class="var">agree</span>:
+    <span class="fn">st.success</span>(<span class="str">"✅ Thank you for agreeing!"</span>)
+<span class="kw">else</span>:
+    <span class="fn">st.warning</span>(<span class="str">"⚠️ Please accept terms to continue."</span>)
+
+<span class="fn">st.divider</span>()
+
+<span class="cm"># Checked by default using value=True</span>
+<span class="var">show_details</span> <span class="op">=</span> <span class="fn">st.checkbox</span>(<span class="str">"Show advanced details"</span>, <span class="var">value</span><span class="op">=</span><span class="kw">True</span>)
+
+<span class="kw">if</span> <span class="var">show_details</span>:
+    <span class="fn">st.write</span>(<span class="str">"🔍 Advanced details: Experience = 8+ years, Domain = Banking"</span>)
+
+<span class="fn">st.divider</span>()
+
+<span class="cm"># Great use case: show/hide a section</span>
+<span class="var">show_raw</span> <span class="op">=</span> <span class="fn">st.checkbox</span>(<span class="str">"Show raw data"</span>)
+<span class="var">data</span> <span class="op">=</span> {<span class="str">"name"</span>: <span class="str">"Umakant"</span>, <span class="str">"exp"</span>: <span class="str">"8 years"</span>, <span class="str">"role"</span>: <span class="str">"QA Engineer"</span>}
+<span class="kw">if</span> <span class="var">show_raw</span>:
+    <span class="fn">st.write</span>(<span class="var">data</span>)   <span class="cm"># st.write can display dicts as a table!</span></pre>
+  </div>
+</div>
+
+<!-- L10 -->
+<div class="lesson" id="radio">
+  <div class="lesson-num">Lesson 10</div>
+  <h2>st.radio() — Pick ONE from a Visible List 📻</h2>
+  <p>Shows all options visibly as radio buttons. User picks exactly one. Unlike <code>selectbox</code> (dropdown), all options are <strong>always visible on screen</strong>.</p>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">python — radio_demo.py</span><div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div></div>
+    <pre><span class="kw">import</span> <span class="cls">streamlit</span> <span class="kw">as</span> <span class="var">st</span>
+
+<span class="fn">st.title</span>(<span class="str">"Radio Button Demo"</span>)
+
+<span class="var">experience</span> <span class="op">=</span> <span class="fn">st.radio</span>(
+    <span class="str">"Your experience level:"</span>,
+    [<span class="str">"Beginner (0-2 yrs)"</span>, <span class="str">"Intermediate (2-5 yrs)"</span>, <span class="str">"Senior (5+ yrs)"</span>],
+    <span class="var">index</span><span class="op">=</span><span class="num">2</span>   <span class="cm"># Default: 3rd option (Senior) selected</span>
+)
+<span class="fn">st.write</span>(<span class="str">f"Level: {experience}"</span>)
+
+<span class="fn">st.divider</span>()
+
+<span class="cm"># horizontal=True puts all options side by side in one row</span>
+<span class="var">result</span> <span class="op">=</span> <span class="fn">st.radio</span>(
+    <span class="str">"Test result:"</span>,
+    [<span class="str">"✅ Pass"</span>, <span class="str">"❌ Fail"</span>, <span class="str">"⏸️ Blocked"</span>],
+    <span class="var">horizontal</span><span class="op">=</span><span class="kw">True</span>
+)
+<span class="fn">st.write</span>(<span class="str">"Result marked:"</span>, <span class="var">result</span>)</pre>
+  </div>
+  <table>
+    <thead><tr><th>Widget</th><th>Options always visible?</th><th>Pick how many?</th><th>Returns</th></tr></thead>
+    <tbody>
+      <tr><td><code>st.selectbox()</code></td><td>No (hidden dropdown)</td><td>One</td><td>Single value</td></tr>
+      <tr><td><code>st.radio()</code></td><td>Yes (all visible)</td><td>One</td><td>Single value</td></tr>
+      <tr><td><code>st.multiselect()</code></td><td>No (hidden dropdown)</td><td>Many</td><td>List</td></tr>
+      <tr><td><code>st.checkbox()</code></td><td>Yes (all visible)</td><td>Each independent</td><td><code>True</code> / <code>False</code></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- L11 -->
+<div class="lesson" id="date">
+  <div class="lesson-num">Lesson 11</div>
+  <h2>st.date_input() and st.time_input() 📅⏰</h2>
+  <p>Calendar and clock pickers. Click them to get a calendar popup or time selector. Returns Python <code>datetime.date</code> or <code>datetime.time</code> objects.</p>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">python — datetime_demo.py</span><div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div></div>
+    <pre><span class="kw">import</span> <span class="cls">streamlit</span> <span class="kw">as</span> <span class="var">st</span>
+<span class="kw">import</span> <span class="cls">datetime</span>
+
+<span class="fn">st.title</span>(<span class="str">"Date and Time Demo"</span>)
+
+<span class="cm"># Date picker — shows a calendar when clicked</span>
+<span class="var">dob</span> <span class="op">=</span> <span class="fn">st.date_input</span>(
+    <span class="str">"Date of birth:"</span>,
+    <span class="var">value</span><span class="op">=</span><span class="cls">datetime</span>.<span class="fn">date</span>(<span class="num">1990</span>, <span class="num">1</span>, <span class="num">1</span>),    <span class="cm"># Default date</span>
+    <span class="var">min_value</span><span class="op">=</span><span class="cls">datetime</span>.<span class="fn">date</span>(<span class="num">1950</span>, <span class="num">1</span>, <span class="num">1</span>),
+    <span class="var">max_value</span><span class="op">=</span><span class="cls">datetime</span>.<span class="fn">date</span>.<span class="fn">today</span>()
+)
+<span class="var">age_days</span> <span class="op">=</span> (<span class="cls">datetime</span>.<span class="fn">date</span>.<span class="fn">today</span>() <span class="op">-</span> <span class="var">dob</span>).<span class="var">days</span>
+<span class="fn">st.write</span>(<span class="str">f"You are {age_days // 365} years old!"</span>)
+
+<span class="fn">st.divider</span>()
+
+<span class="cm"># Time picker</span>
+<span class="var">meeting_time</span> <span class="op">=</span> <span class="fn">st.time_input</span>(
+    <span class="str">"Schedule standup meeting:"</span>,
+    <span class="var">value</span><span class="op">=</span><span class="cls">datetime</span>.<span class="fn">time</span>(<span class="num">10</span>, <span class="num">0</span>)   <span class="cm"># Default: 10:00 AM</span>
+)
+<span class="fn">st.write</span>(<span class="str">f"Meeting at: {meeting_time}"</span>)
+
+<span class="fn">st.divider</span>()
+
+<span class="cm"># Date RANGE picker — pass a tuple as value!</span>
+<span class="var">date_range</span> <span class="op">=</span> <span class="fn">st.date_input</span>(
+    <span class="str">"Test execution window:"</span>,
+    <span class="var">value</span><span class="op">=</span>(<span class="cls">datetime</span>.<span class="fn">date</span>.<span class="fn">today</span>(), <span class="cls">datetime</span>.<span class="fn">date</span>.<span class="fn">today</span>())
+)
+<span class="kw">if</span> <span class="fn">len</span>(<span class="var">date_range</span>) <span class="op">==</span> <span class="num">2</span>:
+    <span class="fn">st.write</span>(<span class="str">f"Testing from {date_range[0]} to {date_range[1]}"</span>)</pre>
+  </div>
+  <div class="box tip">
+    <div class="box-label">💡 QA Engineer Tip</div>
+    As a QA engineer, date pickers are incredibly useful for: filtering test results by execution date, selecting sprint start/end dates, scheduling regression runs, and building test report dashboards. Skills you can use at work immediately!
+  </div>
+</div>
+
+<!-- L12 -->
+<div class="lesson" id="project">
+  <div class="lesson-num">Lesson 12</div>
+  <h2>🏗️ Mini Project — Simple Calculator App</h2>
+  <p>Let's combine everything from today into one real working app. This is exactly how Streamlit apps are built — put widgets together, add logic, show output.</p>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">python — calculator_app.py — copy and run this!</span><div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div></div>
+    <pre><span class="kw">import</span> <span class="cls">streamlit</span> <span class="kw">as</span> <span class="var">st</span>
+
+<span class="fn">st.set_page_config</span>(<span class="var">page_title</span><span class="op">=</span><span class="str">"Calculator"</span>, <span class="var">page_icon</span><span class="op">=</span><span class="str">"🧮"</span>)
+
+<span class="fn">st.title</span>(<span class="str">"🧮 Simple Calculator"</span>)
+<span class="fn">st.caption</span>(<span class="str">"Day 2 Mini Project — built with Streamlit widgets"</span>)
+<span class="fn">st.divider</span>()
+
+<span class="cm"># Widget 1: First number</span>
+<span class="var">num1</span> <span class="op">=</span> <span class="fn">st.number_input</span>(<span class="str">"First number:"</span>, <span class="var">value</span><span class="op">=</span><span class="num">0.0</span>, <span class="var">step</span><span class="op">=</span><span class="num">1.0</span>)
+
+<span class="cm"># Widget 2: Pick operation — horizontal radio buttons</span>
+<span class="var">operation</span> <span class="op">=</span> <span class="fn">st.radio</span>(
+    <span class="str">"Operation:"</span>,
+    [<span class="str">"➕ Add"</span>, <span class="str">"➖ Subtract"</span>, <span class="str">"✖️ Multiply"</span>, <span class="str">"➗ Divide"</span>],
+    <span class="var">horizontal</span><span class="op">=</span><span class="kw">True</span>
+)
+
+<span class="cm"># Widget 3: Second number</span>
+<span class="var">num2</span> <span class="op">=</span> <span class="fn">st.number_input</span>(<span class="str">"Second number:"</span>, <span class="var">value</span><span class="op">=</span><span class="num">0.0</span>, <span class="var">step</span><span class="op">=</span><span class="num">1.0</span>)
+
+<span class="cm"># Widget 4: Optional checkbox to show steps</span>
+<span class="var">show_steps</span> <span class="op">=</span> <span class="fn">st.checkbox</span>(<span class="str">"Show calculation steps"</span>)
+
+<span class="fn">st.divider</span>()
+
+<span class="cm"># Widget 5: Calculate button</span>
+<span class="kw">if</span> <span class="fn">st.button</span>(<span class="str">"🔢 Calculate"</span>, <span class="var">type</span><span class="op">=</span><span class="str">"primary"</span>):
+
+    <span class="kw">if</span> <span class="str">"Add"</span> <span class="kw">in</span> <span class="var">operation</span>:
+        <span class="var">result</span>, <span class="var">symbol</span> <span class="op">=</span> <span class="var">num1</span> <span class="op">+</span> <span class="var">num2</span>, <span class="str">"+"</span>
+    <span class="kw">elif</span> <span class="str">"Subtract"</span> <span class="kw">in</span> <span class="var">operation</span>:
+        <span class="var">result</span>, <span class="var">symbol</span> <span class="op">=</span> <span class="var">num1</span> <span class="op">-</span> <span class="var">num2</span>, <span class="str">"-"</span>
+    <span class="kw">elif</span> <span class="str">"Multiply"</span> <span class="kw">in</span> <span class="var">operation</span>:
+        <span class="var">result</span>, <span class="var">symbol</span> <span class="op">=</span> <span class="var">num1</span> <span class="op">*</span> <span class="var">num2</span>, <span class="str">"×"</span>
+    <span class="kw">else</span>:
+        <span class="kw">if</span> <span class="var">num2</span> <span class="op">==</span> <span class="num">0</span>:
+            <span class="fn">st.error</span>(<span class="str">"❌ Cannot divide by zero!"</span>)
+            <span class="fn">st.stop</span>()   <span class="cm"># Stop execution here!</span>
+        <span class="var">result</span>, <span class="var">symbol</span> <span class="op">=</span> <span class="var">num1</span> <span class="op">/</span> <span class="var">num2</span>, <span class="str">"÷"</span>
+
+    <span class="kw">if</span> <span class="var">show_steps</span>:
+        <span class="fn">st.info</span>(<span class="str">f"Step: {num1} {symbol} {num2} = ?"</span>)
+
+    <span class="fn">st.success</span>(<span class="str">f"✅ Answer: {num1} {symbol} {num2} = **{result}**"</span>)</pre>
+  </div>
+  <div class="box tip">
+    <div class="box-label">💡 New: st.stop()</div>
+    <code>st.stop()</code> immediately halts the entire script from running further. Like a <code>return</code> in a function, but for the whole page. Use it after showing an error to prevent invalid calculations from continuing!
+  </div>
+</div>
+
+<!-- CHEAT SHEET -->
+<div class="lesson" id="cheat">
+  <div class="lesson-num">Lesson 13</div>
+  <h2>Day 2 Cheat Sheet 📋</h2>
+  <div class="cheat">
+    <div class="cheat-title">⚡ All Widgets Quick Reference</div>
+    <div class="cheat-section">// Button and Toggle</div>
+    <div class="cheat-row"><div class="cheat-code">st.button("label")</div><div class="cheat-desc">Returns True on click, else False</div></div>
+    <div class="cheat-row"><div class="cheat-code">st.button("label", type="primary")</div><div class="cheat-desc">Bold coloured button</div></div>
+    <div class="cheat-row"><div class="cheat-code">st.checkbox("label")</div><div class="cheat-desc">Returns True (ticked) or False</div></div>
+    <div class="cheat-row"><div class="cheat-code">st.checkbox("label", value=True)</div><div class="cheat-desc">Pre-ticked checkbox</div></div>
+    <div class="cheat-section">// Text Input</div>
+    <div class="cheat-row"><div class="cheat-code">st.text_input("label")</div><div class="cheat-desc">Single-line → returns str</div></div>
+    <div class="cheat-row"><div class="cheat-code">st.text_input("label", type="password")</div><div class="cheat-desc">Hidden password field</div></div>
+    <div class="cheat-row"><div class="cheat-code">st.text_area("label", height=150)</div><div class="cheat-desc">Multi-line text box → returns str</div></div>
+    <div class="cheat-section">// Number Input</div>
+    <div class="cheat-row"><div class="cheat-code">st.number_input("label", min_value=0, value=10, step=1)</div><div class="cheat-desc">Number box with arrows → int or float</div></div>
+    <div class="cheat-row"><div class="cheat-code">st.slider("label", 0, 100, 50)</div><div class="cheat-desc">Single slider → returns number</div></div>
+    <div class="cheat-row"><div class="cheat-code">st.slider("label", 0, 100, (20,80))</div><div class="cheat-desc">Range slider → returns tuple (low, high)</div></div>
+    <div class="cheat-section">// Selection</div>
+    <div class="cheat-row"><div class="cheat-code">st.selectbox("label", ["A","B","C"])</div><div class="cheat-desc">Dropdown, pick one → returns item</div></div>
+    <div class="cheat-row"><div class="cheat-code">st.multiselect("label", ["A","B","C"])</div><div class="cheat-desc">Multi-dropdown → returns list</div></div>
+    <div class="cheat-row"><div class="cheat-code">st.radio("label", ["A","B","C"])</div><div class="cheat-desc">Visible options, pick one → returns item</div></div>
+    <div class="cheat-row"><div class="cheat-code">st.radio(..., horizontal=True)</div><div class="cheat-desc">Options displayed side by side</div></div>
+    <div class="cheat-section">// Date and Time</div>
+    <div class="cheat-row"><div class="cheat-code">st.date_input("label")</div><div class="cheat-desc">Calendar picker → returns datetime.date</div></div>
+    <div class="cheat-row"><div class="cheat-code">st.time_input("label")</div><div class="cheat-desc">Clock picker → returns datetime.time</div></div>
+    <div class="cheat-section">// Message Boxes (bonus preview)</div>
+    <div class="cheat-row"><div class="cheat-code">st.success("message")</div><div class="cheat-desc">Green success box ✅</div></div>
+    <div class="cheat-row"><div class="cheat-code">st.error("message")</div><div class="cheat-desc">Red error box ❌</div></div>
+    <div class="cheat-row"><div class="cheat-code">st.warning("message")</div><div class="cheat-desc">Yellow warning box ⚠️</div></div>
+    <div class="cheat-row"><div class="cheat-code">st.info("message")</div><div class="cheat-desc">Blue info box ℹ️</div></div>
+    <div class="cheat-row"><div class="cheat-code">st.stop()</div><div class="cheat-desc">Halt script execution immediately</div></div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div class="lesson" id="quiz">
+  <div class="lesson-num">Lesson 14</div>
+  <h2>Mini Quiz 🧠</h2>
+  <div class="quiz">
+    <div class="quiz-title">✏️ Test Yourself — Day 2</div>
+    <ol>
+      <li>What does <code>st.button("Go")</code> return when clicked?</li>
+      <li>What does <code>st.text_input("Name")</code> return when nothing is typed yet?</li>
+      <li>What is the key difference between <code>st.selectbox()</code> and <code>st.radio()</code>?</li>
+      <li>How do you make <code>st.slider()</code> show two handles (a range)?</li>
+      <li>What Python data type does <code>st.multiselect()</code> always return?</li>
+      <li>How do you pre-fill <code>st.text_input()</code> with default text?</li>
+      <li>What does <code>st.stop()</code> do?</li>
+      <li>Write one line: a dropdown with options Red, Green, Blue.</li>
+    </ol>
+    <details class="quiz-ans">
+      <summary>👀 Reveal Answers</summary>
+      <ol style="margin-top:0.8rem;margin-left:1.2rem;font-size:0.88rem;color:#155724;">
+        <li><code>True</code></li>
+        <li>An empty string <code>""</code></li>
+        <li><code>selectbox</code> hides options in a dropdown; <code>radio</code> shows all options visible on the page at all times.</li>
+        <li>Pass a tuple as the default value: <code>value=(20, 80)</code></li>
+        <li>A Python <strong>list</strong></li>
+        <li>Use the <code>value</code> parameter: <code>st.text_input("Name", value="Umakant")</code></li>
+        <li>It immediately stops the rest of the Streamlit script from executing — nothing below <code>st.stop()</code> runs.</li>
+        <li><code>color = st.selectbox("Pick colour:", ["Red", "Green", "Blue"])</code></li>
+      </ol>
+    </details>
+  </div>
+</div>
+
+<!-- HOMEWORK -->
+<div class="lesson" id="hw">
+  <div class="lesson-num">Lesson 15</div>
+  <h2>Homework 🏠</h2>
+  <div class="homework">
+    <div class="hw-title">📌 Day 2 Homework</div>
+    <div class="hw-subtitle">// complete before Day 3 · estimated 30-45 mins</div>
+    <ul class="hw-list">
+      <li>Build a <strong>"QA Test Summary Form"</strong> app. Include: a text_input for tester name, a selectbox for project name (3 fake projects), a slider for number of test cases run (0–500), radio buttons for overall result (Pass / Fail / Blocked), and a multiselect for bug severity found (Low, Medium, High, Critical).</li>
+      <li>Add a <strong>"Submit Report"</strong> button (type="primary"). When clicked, show a formatted <code>st.success()</code> message summarising all the entered details.</li>
+      <li>Add a checkbox "Mark as Urgent". If ticked, show a <code>st.warning("This report is flagged URGENT!")</code>.</li>
+      <li>Add validation: if the tester name box is empty and the button is clicked, show <code>st.error("Please enter your name!")</code> and call <code>st.stop()</code>.</li>
+      <li><strong>Bonus challenge:</strong> Add a <code>st.date_input()</code> for "Test Execution Date" and include it in the success summary message.</li>
+    </ul>
+  </div>
+  <div class="box tip">
+    <div class="box-label">👨‍🏫 Trainer's Note</div>
+    This homework is directly useful in your QA job! A test summary form is something you fill daily. By building it yourself, you'll have a real tool you can show your manager and team. That is the Streamlit advantage — learning and building real work tools at the same time.
+  </div>
+  <p style="margin-top:1.5rem;color:var(--muted);font-size:0.9rem;">
+    📅 <strong>Coming up on Day 3:</strong> Layout — <code>st.columns()</code>, <code>st.sidebar()</code>, <code>st.expander()</code>, <code>st.tabs()</code> — structuring your app like a real website with sections, navigation and panels!
+  </p>
+</div>
+
+</main>
+
+<footer>
+  <p>🐍 Python Trainer Series &nbsp;·&nbsp; <span>Streamlit in 30 Days</span> &nbsp;·&nbsp; Day 2 of 30</p>
+  <p style="margin-top:0.4rem;color:#1e293b;">Personalised notes for Umakant Pandey &nbsp;·&nbsp; Keep practising every day!</p>
+</footer>
 
 </body>
 </html>
