@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Streamlit – Day 3 Notes | Layout & Structure</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Lora:ital,wght@0,400;0,600;1,400&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#f7f3ee;--paper:#fffdf9;--ink:#1a1410;--muted:#7a6f65;--accent:#c0392b;--accent2:#2471a3;--highlight:#f9e79f;--code-bg:#1e1e2e;--code-fg:#cdd6f4;--border:#e0d8ce;--note-bg:#eaf4fb;--note-border:#2471a3;--tip-bg:#e9f7ef;--tip-border:#27ae60;--warn-bg:#fef9e7;--warn-border:#f39c12;--purple:#8e44ad;}
+*{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--ink);font-family:'Lora',Georgia,serif;font-size:17px;line-height:1.85;}
+nav{position:sticky;top:0;z-index:100;background:var(--ink);padding:0.7rem 2rem;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px rgba(0,0,0,0.3);}
+.nav-brand{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:#fff;letter-spacing:0.05em;}.nav-brand span{color:#e74c3c;}
+.nav-day{font-family:'Fira Code',monospace;font-size:0.75rem;color:#aaa;background:rgba(255,255,255,0.07);border-radius:20px;padding:0.25rem 0.8rem;}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#0d1117 0%,#1a0a2e 100%);color:#fff;padding:4rem 5rem 3.5rem;position:relative;overflow:hidden;}
+.hero::before{content:"";position:absolute;top:-80px;right:-80px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(142,68,173,0.25) 0%,transparent 70%);}
+.hero::after{content:"";position:absolute;bottom:-60px;left:8%;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(192,57,43,0.12) 0%,transparent 70%);}
+.hero-eyebrow{font-family:'Fira Code',monospace;font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:#bf7fff;margin-bottom:0.8rem;}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(2.2rem,5vw,3.6rem);font-weight:800;line-height:1.1;margin-bottom:0.8rem;letter-spacing:-0.02em;}
+.hero h1 em{color:#bf7fff;font-style:normal;}
+.hero p{color:#bbb;font-family:'Lora',serif;font-size:1rem;max-width:620px;margin-bottom:1.5rem;}
+.hero-pills{display:flex;flex-wrap:wrap;gap:0.5rem;}
+.pill{font-family:'Fira Code',monospace;font-size:0.72rem;padding:0.3rem 0.8rem;border-radius:20px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#ddd;}
+
+/* PROGRESS */
+.progress-section{background:var(--paper);border-bottom:1px solid var(--border);padding:1.2rem 5rem;}
+.progress-label{font-family:'Fira Code',monospace;font-size:0.72rem;color:var(--muted);margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.1em;}
+.progress-track{display:flex;gap:0.3rem;align-items:center;}
+.prog-day{flex:1;height:6px;border-radius:3px;background:var(--border);}
+.prog-day.done{background:var(--accent);}
+.prog-day.current{background:var(--purple);}
+.prog-nums{font-family:'Fira Code',monospace;font-size:0.7rem;color:var(--muted);margin-left:0.6rem;}
+
+/* TOC */
+.toc-wrap{max-width:860px;margin:2.5rem auto;padding:0 2rem;}
+.toc-card{background:var(--paper);border:1px solid var(--border);border-radius:12px;padding:1.5rem 2rem;}
+.toc-title{font-family:'Syne',sans-serif;font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);margin-bottom:1rem;}
+.toc-list{list-style:none;}
+.toc-list li{display:flex;align-items:center;gap:0.6rem;padding:0.35rem 0;border-bottom:1px dashed var(--border);font-size:0.92rem;}
+.toc-list li:last-child{border-bottom:none;}
+.toc-num{font-family:'Fira Code',monospace;font-size:0.7rem;color:var(--accent);min-width:28px;}
+.toc-list a{color:var(--ink);text-decoration:none;}.toc-list a:hover{color:var(--purple);}
+
+/* MAIN */
+main{max-width:860px;margin:0 auto;padding:0 2rem 4rem;}
+.lesson{margin-top:3rem;padding-top:2rem;border-top:2px solid var(--border);}
+.lesson:first-of-type{border-top:none;}
+.lesson-num{font-family:'Fira Code',monospace;font-size:0.7rem;color:var(--accent);text-transform:uppercase;letter-spacing:0.15em;margin-bottom:0.4rem;}
+.lesson h2{font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:800;color:var(--ink);margin-bottom:1rem;line-height:1.15;}
+p{margin-bottom:1rem;color:#2c2825;}
+
+/* BOXES */
+.box{border-left:4px solid;border-radius:0 10px 10px 0;padding:1rem 1.3rem;margin:1.5rem 0;font-size:0.93rem;}
+.box-label{font-family:'Syne',sans-serif;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:0.4rem;}
+.note{background:var(--note-bg);border-color:var(--note-border);}.note .box-label{color:var(--note-border);}
+.tip{background:var(--tip-bg);border-color:var(--tip-border);}.tip .box-label{color:var(--tip-border);}
+.warn{background:var(--warn-bg);border-color:var(--warn-border);}.warn .box-label{color:var(--warn-border);}
+.think{background:#f5eef8;border-color:var(--purple);}.think .box-label{color:var(--purple);}
+
+/* ANALOGY */
+.analogy{background:var(--highlight);border:1px solid #f0c840;border-radius:10px;padding:1rem 1.3rem;margin:1.5rem 0;font-size:0.93rem;}
+.analogy-label{font-family:'Syne',sans-serif;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#9a7d0a;margin-bottom:0.3rem;}
+
+/* CODE */
+.code-wrap{background:var(--code-bg);border-radius:10px;overflow:hidden;margin:1.5rem 0;box-shadow:0 4px 20px rgba(0,0,0,0.2);}
+.code-header{background:#161622;padding:0.55rem 1.2rem;display:flex;justify-content:space-between;align-items:center;}
+.code-lang{font-family:'Fira Code',monospace;font-size:0.68rem;color:#6c7086;text-transform:uppercase;letter-spacing:0.1em;}
+.code-dots{display:flex;gap:5px;}.code-dots span{width:10px;height:10px;border-radius:50%;}
+.dot-r{background:#ff5f57;}.dot-y{background:#febc2e;}.dot-g{background:#28c840;}
+pre{padding:1.3rem 1.5rem;overflow-x:auto;font-family:'Fira Code',monospace;font-size:0.84rem;line-height:1.7;color:var(--code-fg);}
+.kw{color:#cba6f7;}.fn{color:#89b4fa;}.str{color:#a6e3a1;}.cm{color:#6c7086;font-style:italic;}.num{color:#fab387;}.var{color:#f38ba8;}.cls{color:#f9e2af;}.op{color:#89dceb;}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse;margin:1.5rem 0;font-size:0.88rem;}
+th{background:var(--ink);color:#fff;font-family:'Syne',sans-serif;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;padding:0.6rem 1rem;text-align:left;}
+td{padding:0.6rem 1rem;border-bottom:1px solid var(--border);background:var(--paper);vertical-align:top;}
+tr:nth-child(even) td{background:#f5f0ea;}
+td code{font-family:'Fira Code',monospace;font-size:0.8rem;background:var(--bg);padding:0.1rem 0.4rem;border-radius:4px;color:var(--accent);}
+
+/* VISUAL LAYOUT DIAGRAMS */
+.layout-diagram{margin:1.5rem 0;font-family:'Fira Code',monospace;font-size:0.82rem;}
+.layout-diagram-title{font-family:'Syne',sans-serif;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);margin-bottom:0.6rem;}
+.diag-row{display:flex;gap:8px;margin-bottom:6px;}
+.diag-cell{flex:1;background:linear-gradient(135deg,#e8f4fd,#d6eaf8);border:2px solid #aed6f1;border-radius:8px;padding:0.7rem;text-align:center;color:#1a5276;font-size:0.8rem;font-weight:600;}
+.diag-cell.purple{background:linear-gradient(135deg,#f5eef8,#e8d5f5);border-color:#c39bd3;color:#6c3483;}
+.diag-cell.green{background:linear-gradient(135deg,#e9f7ef,#d5f5e3);border-color:#82e0aa;color:#1e8449;}
+.diag-cell.orange{background:linear-gradient(135deg,#fef9e7,#fdebd0);border-color:#f8c471;color:#b7770d;}
+.diag-cell.sidebar{flex:0 0 160px;background:linear-gradient(135deg,#1a1410,#2c2420);border-color:#555;color:#aaa;}
+.diag-cell.main{background:linear-gradient(135deg,#f7f3ee,#ede8e0);border-color:#c0b8b0;color:#555;}
+.diag-full{background:linear-gradient(135deg,#eafaf1,#d5f5e3);border:2px solid #82e0aa;border-radius:8px;padding:0.6rem;text-align:center;color:#1e8449;font-size:0.8rem;font-weight:600;margin-bottom:6px;}
+
+/* STEPS */
+.steps{counter-reset:step;list-style:none;margin:1.2rem 0;}
+.steps li{counter-increment:step;display:flex;gap:1rem;margin-bottom:1rem;align-items:flex-start;}
+.steps li::before{content:counter(step);min-width:28px;height:28px;background:var(--purple);color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:0.78rem;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:0.1rem;}
+
+/* QUIZ */
+.quiz{background:var(--paper);border:2px solid var(--ink);border-radius:12px;padding:1.5rem 2rem;margin:2rem 0;}
+.quiz-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;margin-bottom:1rem;}
+.quiz ol{margin-left:1.2rem;font-size:0.9rem;}.quiz li{margin-bottom:0.5rem;}
+.quiz-ans{margin-top:1rem;padding:0.8rem 1rem;background:var(--tip-bg);border-radius:8px;font-size:0.85rem;border:1px solid var(--tip-border);}
+.quiz-ans summary{font-family:'Syne',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;color:var(--tip-border);text-transform:uppercase;letter-spacing:0.08em;}
+
+/* CHEAT SHEET */
+.cheat{background:var(--ink);color:#e2e8f0;border-radius:12px;padding:1.8rem 2rem;margin:2rem 0;}
+.cheat-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:#bf7fff;margin-bottom:1rem;border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:0.5rem;}
+.cheat-row{display:grid;grid-template-columns:280px 1fr;gap:0.5rem 1rem;margin-bottom:0.6rem;font-size:0.85rem;align-items:start;}
+.cheat-code{font-family:'Fira Code',monospace;color:#f9e2af;font-size:0.78rem;}
+.cheat-desc{color:#94a3b8;}
+.cheat-section{font-family:'Syne',sans-serif;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#bf7fff;margin:1rem 0 0.5rem;padding-top:0.8rem;border-top:1px solid rgba(255,255,255,0.08);}
+
+/* HOMEWORK */
+.homework{background:linear-gradient(135deg,#0d1117 0%,#1a0a2e 100%);color:#e2e8f0;border-radius:12px;padding:2rem 2.2rem;margin:2.5rem 0;}
+.hw-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:#bf7fff;margin-bottom:0.3rem;}
+.hw-subtitle{font-size:0.8rem;color:#888;font-family:'Fira Code',monospace;margin-bottom:1.2rem;}
+.hw-list{list-style:none;}
+.hw-list li{padding:0.5rem 0;border-bottom:1px solid rgba(255,255,255,0.07);font-size:0.9rem;display:flex;gap:0.6rem;align-items:flex-start;}
+.hw-list li::before{content:"▸";color:#bf7fff;flex-shrink:0;margin-top:0.1rem;}
+
+/* FEATURE GRID */
+.feature-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.5rem 0;}
+.feature-card{background:var(--paper);border:1px solid var(--border);border-radius:12px;padding:1.2rem 1.4rem;border-top:3px solid var(--purple);}
+.feature-icon{font-size:1.8rem;margin-bottom:0.5rem;}
+.feature-name{font-family:'Fira Code',monospace;font-size:0.82rem;color:var(--purple);font-weight:600;margin-bottom:0.3rem;}
+.feature-desc{font-size:0.83rem;color:var(--muted);line-height:1.5;}
+
+footer{background:var(--ink);color:#666;text-align:center;padding:2rem;font-family:'Fira Code',monospace;font-size:0.75rem;}
+footer span{color:#bf7fff;}
+code{font-family:'Fira Code',monospace;font-size:0.83em;background:#ede8e2;color:var(--accent);padding:0.1rem 0.4rem;border-radius:4px;}
+mark{background:var(--highlight);padding:0 0.2rem;border-radius:3px;}
+
+@media(max-width:680px){
+  .hero,.progress-section{padding-left:1.5rem;padding-right:1.5rem;}
+  main,.toc-wrap{padding-left:1.2rem;padding-right:1.2rem;}
+  .hero h1{font-size:2rem;}
+  .cheat-row,.feature-grid{grid-template-columns:1fr;}
+  .diag-row{flex-direction:column;}
+  .diag-cell.sidebar{flex:auto;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">🐍 <span>Python</span> Trainer</div>
+  <div class="nav-day">📅 Day 3 of 30 — Streamlit</div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">// Your Personal Python Trainer · Streamlit Series</div>
+  <h1>Day 3: <em>Layout & Structure</em><br/>Organise Your App Like a Pro</h1>
+  <p>Today we learn to arrange content beautifully — side by side columns, a sidebar panel, collapsible sections, and tabs. After today, your apps will look like real websites!</p>
+  <div class="hero-pills">
+    <span class="pill">🕐 ~60 min read</span>
+    <span class="pill">🟡 Intermediate</span>
+    <span class="pill">💻 8 code examples</span>
+    <span class="pill">🏗️ Full Dashboard Project</span>
+    <span class="pill">📝 Quiz + Homework</span>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-section">
+  <div class="progress-label">Your 30-Day Streamlit Journey</div>
+  <div class="progress-track">
+    <div class="prog-day done"></div>
+    <div class="prog-day done"></div>
+    <div class="prog-day current"></div>
+    <div class="prog-day"></div><div class="prog-day"></div><div class="prog-day"></div>
+    <div class="prog-day"></div><div class="prog-day"></div><div class="prog-day"></div>
+    <div class="prog-day"></div><div class="prog-day"></div><div class="prog-day"></div>
+    <div class="prog-day"></div><div class="prog-day"></div><div class="prog-day"></div>
+    <div class="prog-day"></div><div class="prog-day"></div><div class="prog-day"></div>
+    <div class="prog-day"></div><div class="prog-day"></div><div class="prog-day"></div>
+    <div class="prog-day"></div><div class="prog-day"></div><div class="prog-day"></div>
+    <div class="prog-day"></div><div class="prog-day"></div><div class="prog-day"></div>
+    <div class="prog-day"></div><div class="prog-day"></div><div class="prog-day"></div>
+    <div class="prog-nums">3 / 30</div>
+  </div>
+</div>
+
+<!-- TOC -->
+<div class="toc-wrap">
+  <div class="toc-card">
+    <div class="toc-title">📚 Today's Lessons</div>
+    <ul class="toc-list">
+      <li><span class="toc-num">01</span><a href="#concept">The Big Picture — Why Layout Matters</a></li>
+      <li><span class="toc-num">02</span><a href="#columns">st.columns() — Side-by-Side Layout</a></li>
+      <li><span class="toc-num">03</span><a href="#sidebar">st.sidebar — The Left Panel</a></li>
+      <li><span class="toc-num">04</span><a href="#expander">st.expander() — Collapsible Sections</a></li>
+      <li><span class="toc-num">05</span><a href="#tabs">st.tabs() — Tabbed Navigation</a></li>
+      <li><span class="toc-num">06</span><a href="#container">st.container() — Grouping Elements</a></li>
+      <li><span class="toc-num">07</span><a href="#empty">st.empty() — Placeholder That Updates</a></li>
+      <li><span class="toc-num">08</span><a href="#pageconfig">st.set_page_config() — App Settings</a></li>
+      <li><span class="toc-num">09</span><a href="#metrics">st.metric() — KPI Cards</a></li>
+      <li><span class="toc-num">10</span><a href="#project">🏗️ Mini Project — QA Dashboard</a></li>
+      <li><span class="toc-num">11</span><a href="#cheat">Day 3 Cheat Sheet</a></li>
+      <li><span class="toc-num">12</span><a href="#quiz">Mini Quiz</a></li>
+      <li><span class="toc-num">13</span><a href="#hw">Homework</a></li>
+    </ul>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main>
+
+<!-- L01 -->
+<div class="lesson" id="concept">
+  <div class="lesson-num">Lesson 01</div>
+  <h2>The Big Picture — Why Layout Matters 🗺️</h2>
+
+  <p>On Day 1 and Day 2, every element we added went one below the other — like a long vertical list. That is fine for a simple script, but real apps need <strong>structure</strong>.</p>
+
+  <div class="analogy">
+    <div class="analogy-label">🏠 Analogy — Building a House</div>
+    Imagine your Streamlit app is a house. So far we have been dumping furniture in one long hallway — bed, then sofa, then table, all in a row. Today we learn to create <strong>rooms</strong>. A living room (main area), a kitchen (sidebar), drawers (expanders), and floors (tabs). Each piece of furniture goes in the right room!
+  </div>
+
+  <p>Streamlit gives us these layout tools. Here is a quick overview before we dive deep into each:</p>
+
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="feature-icon">📐</div>
+      <div class="feature-name">st.columns()</div>
+      <div class="feature-desc">Split the page into side-by-side columns. Like newspaper columns or a CSS flexbox row.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📌</div>
+      <div class="feature-name">st.sidebar</div>
+      <div class="feature-desc">A fixed left panel for filters, settings, and navigation — always visible.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔽</div>
+      <div class="feature-name">st.expander()</div>
+      <div class="feature-desc">A collapsible section. Users click to open/close it. Good for optional details.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🗂️</div>
+      <div class="feature-name">st.tabs()</div>
+      <div class="feature-desc">Tabbed navigation. Like browser tabs. Great for multi-section apps.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📦</div>
+      <div class="feature-name">st.container()</div>
+      <div class="feature-desc">An invisible box to group elements together logically.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⬜</div>
+      <div class="feature-name">st.empty()</div>
+      <div class="feature-desc">A placeholder that can be overwritten later — for live-updating content.</div>
+    </div>
+  </div>
+</div>
+
+<!-- L02 -->
+<div class="lesson" id="columns">
+  <div class="lesson-num">Lesson 02</div>
+  <h2>st.columns() — Side-by-Side Layout 📐</h2>
+
+  <p>The most used layout tool. <code>st.columns()</code> splits the page into side-by-side vertical sections. Think of a newspaper — it has multiple columns of text next to each other.</p>
+
+  <div class="analogy">
+    <div class="analogy-label">📰 Analogy — Newspaper Columns</div>
+    A newspaper has 3–4 columns of text side by side. <code>st.columns(3)</code> does exactly the same for your Streamlit app — creates 3 equal-width columns. Whatever you put inside each column appears next to the other columns, not below them.
+  </div>
+
+  <div class="layout-diagram">
+    <div class="layout-diagram-title">Visual — st.columns(3) layout</div>
+    <div class="diag-full">← Full page width (before columns) →</div>
+    <div class="diag-row">
+      <div class="diag-cell">Column 1<br/><small>col1 content</small></div>
+      <div class="diag-cell purple">Column 2<br/><small>col2 content</small></div>
+      <div class="diag-cell green">Column 3<br/><small>col3 content</small></div>
+    </div>
+    <div class="diag-full">← Full page width (after columns) →</div>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">python — columns_demo.py</span><div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div></div>
+    <pre><span class="kw">import</span> <span class="cls">streamlit</span> <span class="kw">as</span> <span class="var">st</span>
+
+<span class="fn">st.title</span>(<span class="str">"Columns Demo"</span>)
+
+<span class="cm"># ── EQUAL columns ─────────────────────────────────────────</span>
+<span class="cm"># st.columns(3) creates 3 equal-width columns</span>
+<span class="cm"># It returns 3 column objects — we unpack them into variables</span>
+<span class="var">col1</span>, <span class="var">col2</span>, <span class="var">col3</span> <span class="op">=</span> <span class="fn">st.columns</span>(<span class="num">3</span>)
+
+<span class="cm"># Use the "with" keyword to put content INSIDE a column</span>
+<span class="kw">with</span> <span class="var">col1</span>:
+    <span class="fn">st.header</span>(<span class="str">"Column 1"</span>)
+    <span class="fn">st.write</span>(<span class="str">"I am in the first column."</span>)
+    <span class="fn">st.button</span>(<span class="str">"Button in Col 1"</span>)
+
+<span class="kw">with</span> <span class="var">col2</span>:
+    <span class="fn">st.header</span>(<span class="str">"Column 2"</span>)
+    <span class="fn">st.write</span>(<span class="str">"I am in the second column."</span>)
+    <span class="fn">st.slider</span>(<span class="str">"A slider:"</span>, <span class="num">0</span>, <span class="num">100</span>, <span class="num">50</span>)
+
+<span class="kw">with</span> <span class="var">col3</span>:
+    <span class="fn">st.header</span>(<span class="str">"Column 3"</span>)
+    <span class="fn">st.write</span>(<span class="str">"I am in the third column."</span>)
+    <span class="fn">st.selectbox</span>(<span class="str">"Pick:"</span>, [<span class="str">"A"</span>, <span class="str">"B"</span>, <span class="str">"C"</span>])
+
+<span class="fn">st.divider</span>()
+
+<span class="cm"># ── UNEQUAL columns using a list ──────────────────────────</span>
+<span class="cm"># [2, 1] means left column is TWICE as wide as right column</span>
+<span class="cm"># [1, 3, 1] means middle is 3x wider than the sides</span>
+<span class="var">left</span>, <span class="var">right</span> <span class="op">=</span> <span class="fn">st.columns</span>([<span class="num">2</span>, <span class="num">1</span>])
+
+<span class="kw">with</span> <span class="var">left</span>:
+    <span class="fn">st.subheader</span>(<span class="str">"Main Content (2x wide)"</span>)
+    <span class="fn">st.write</span>(<span class="str">"This column gets 2/3 of the page width."</span>)
+
+<span class="kw">with</span> <span class="var">right</span>:
+    <span class="fn">st.subheader</span>(<span class="str">"Side Panel (1x)"</span>)
+    <span class="fn">st.write</span>(<span class="str">"This gets 1/3 of the page."</span>)
+
+<span class="fn">st.divider</span>()
+
+<span class="cm"># ── GAP parameter — adds space BETWEEN columns ────────────</span>
+<span class="var">c1</span>, <span class="var">c2</span> <span class="op">=</span> <span class="fn">st.columns</span>(<span class="num">2</span>, <span class="var">gap</span><span class="op">=</span><span class="str">"large"</span>)
+<span class="cm"># gap options: "small" (default), "medium", "large"</span>
+
+<span class="kw">with</span> <span class="var">c1</span>:
+    <span class="fn">st.write</span>(<span class="str">"Left side with large gap"</span>)
+<span class="kw">with</span> <span class="var">c2</span>:
+    <span class="fn">st.write</span>(<span class="str">"Right side with large gap"</span>)</pre>
+  </div>
+
+  <table>
+    <thead><tr><th>Usage</th><th>What it creates</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td><code>st.columns(3)</code></td><td>3 equal-width columns</td><td>Three equal panels</td></tr>
+      <tr><td><code>st.columns([2, 1])</code></td><td>Left is 2x wider than right</td><td>Main content + small panel</td></tr>
+      <tr><td><code>st.columns([1, 2, 1])</code></td><td>Middle is 2x wider than sides</td><td>Centred hero layout</td></tr>
+      <tr><td><code>st.columns(2, gap="large")</code></td><td>2 columns with big gap between them</td><td>Breathing room between panels</td></tr>
+    </tbody>
+  </table>
+
+  <div class="box warn">
+    <div class="box-label">⚠️ Critical Rule — Always use "with"</div>
+    To put content inside a column, you <strong>must</strong> use the <code>with col1:</code> syntax. If you call <code>st.write()</code> outside a <code>with</code> block after creating columns, it goes <strong>below</strong> the columns on the full page, not inside any column!
+  </div>
+
+  <div class="box tip">
+    <div class="box-label">💡 Real-world use cases for columns</div>
+    Showing 3 KPI cards side by side (like a dashboard) · Putting a chart on the left and a filter on the right · Displaying before/after comparison · Two-column form layout (name | email)
+  </div>
+</div>
+
+<!-- L03 -->
+<div class="lesson" id="sidebar">
+  <div class="lesson-num">Lesson 03</div>
+  <h2>st.sidebar — The Left Panel 📌</h2>
+
+  <p>The sidebar is a collapsible left panel that appears beside your main content. It's the perfect place for <strong>filters, settings, navigation, and controls</strong> — things the user adjusts but doesn't want cluttering the main view.</p>
+
+  <div class="analogy">
+    <div class="analogy-label">📊 Analogy — Excel's Ribbon/Filter Panel</div>
+    Think of it like the filter panel in Excel or the settings panel in any app. The <strong>main area</strong> shows results. The <strong>sidebar</strong> has the controls. User adjusts sidebar → main area updates automatically!
+  </div>
+
+  <div class="layout-diagram">
+    <div class="layout-diagram-title">Visual — Sidebar layout</div>
+    <div class="diag-row">
+      <div class="diag-cell sidebar">SIDEBAR<br/><small style="color:#888;">Filters<br/>Settings<br/>Navigation</small></div>
+      <div class="diag-cell main" style="flex:3;">MAIN CONTENT AREA<br/><small>Results, Charts, Tables, Output</small></div>
+    </div>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">python — sidebar_demo.py</span><div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div></div>
+    <pre><span class="kw">import</span> <span class="cls">streamlit</span> <span class="kw">as</span> <span class="var">st</span>
+
+<span class="fn">st.title</span>(<span class="str">"Sidebar Demo"</span>)
+
+<span class="cm"># ── METHOD 1: Using "with st.sidebar:" block ───────────────</span>
+<span class="cm"># Everything inside this block goes into the sidebar</span>
+<span class="kw">with</span> <span class="var">st.sidebar</span>:
+    <span class="fn">st.header</span>(<span class="str">"⚙️ Filters"</span>)
+    <span class="fn">st.divider</span>()
+
+    <span class="var">project</span> <span class="op">=</span> <span class="fn">st.selectbox</span>(
+        <span class="str">"Select Project:"</span>,
+        [<span class="str">"ICAPS"</span>, <span class="str">"IBSG"</span>, <span class="str">"Lumen Sky"</span>]
+    )
+
+    <span class="var">env</span> <span class="op">=</span> <span class="fn">st.radio</span>(
+        <span class="str">"Environment:"</span>,
+        [<span class="str">"DEV"</span>, <span class="str">"QA"</span>, <span class="str">"STAGING"</span>, <span class="str">"PROD"</span>]
+    )
+
+    <span class="var">show_passed</span> <span class="op">=</span> <span class="fn">st.checkbox</span>(<span class="str">"Show Passed Tests"</span>, <span class="var">value</span><span class="op">=</span><span class="kw">True</span>)
+    <span class="var">show_failed</span> <span class="op">=</span> <span class="fn">st.checkbox</span>(<span class="str">"Show Failed Tests"</span>, <span class="var">value</span><span class="op">=</span><span class="kw">True</span>)
+
+    <span class="fn">st.divider</span>()
+    <span class="fn">st.caption</span>(<span class="str">"QA Dashboard v1.0 | Umakant Pandey"</span>)
+
+<span class="cm"># ── MAIN CONTENT uses sidebar values ──────────────────────</span>
+<span class="cm"># The variables (project, env) are available here too!</span>
+<span class="fn">st.subheader</span>(<span class="str">f"Results for: {project} ({env})"</span>)
+<span class="fn">st.write</span>(<span class="str">f"Showing passed: {show_passed}"</span>)
+<span class="fn">st.write</span>(<span class="str">f"Showing failed: {show_failed}"</span>)
+
+<span class="fn">st.divider</span>()
+
+<span class="cm"># ── METHOD 2: Direct dot notation (alternative style) ─────</span>
+<span class="cm"># You can also call st.sidebar.widget() directly</span>
+<span class="var">sprint</span> <span class="op">=</span> <span class="var">st.sidebar</span>.<span class="fn">number_input</span>(<span class="str">"Sprint number:"</span>, <span class="var">min_value</span><span class="op">=</span><span class="num">1</span>, <span class="var">value</span><span class="op">=</span><span class="num">10</span>)
+<span class="fn">st.write</span>(<span class="str">f"Currently viewing Sprint {sprint}"</span>)</pre>
+  </div>
+
+  <div class="box note">
+    <div class="box-label">📘 Two ways to use sidebar</div>
+    <strong>Method 1 — with block:</strong> <code>with st.sidebar:</code> then indent all sidebar code below.<br/>
+    <strong>Method 2 — dot notation:</strong> <code>st.sidebar.selectbox(...)</code> — call any widget directly on sidebar.<br/><br/>
+    Both work the same. Method 1 is cleaner when you have many sidebar items. Method 2 is quick for one or two items.
+  </div>
+
+  <div class="box tip">
+    <div class="box-label">💡 Pro tip — Sidebar title and image</div>
+    You can add a logo or title in the sidebar too:<br/>
+    <code>st.sidebar.title("My App")</code><br/>
+    <code>st.sidebar.image("logo.png", width=150)</code><br/>
+    This gives your app a professional branded look!
+  </div>
+</div>
+
+<!-- L04 -->
+<div class="lesson" id="expander">
+  <div class="lesson-num">Lesson 04</div>
+  <h2>st.expander() — Collapsible Sections 🔽</h2>
+
+  <p>An expander is a section that starts collapsed (hidden). The user clicks a title/arrow to open it and see the content inside. Perfect for optional details, raw data, debug info, or long explanations you don't want to clutter the main view.</p>
+
+  <div class="analogy">
+    <div class="analogy-label">📬 Analogy — Accordion File Folder</div>
+    Think of a filing cabinet with accordion folders. Each folder is labelled on the outside. You can see all labels at once. When you need to read something, you pull open just that folder. <code>st.expander()</code> works the same — user sees all section titles, opens only what they need.
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">python — expander_demo.py</span><div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div></div>
+    <pre><span class="kw">import</span> <span class="cls">streamlit</span> <span class="kw">as</span> <span class="var">st</span>
+
+<span class="fn">st.title</span>(<span class="str">"Expander Demo"</span>)
+<span class="fn">st.write</span>(<span class="str">"Main visible content is here. Expand sections below for details."</span>)
+
+<span class="cm"># ── Basic expander — closed by default ────────────────────</span>
+<span class="kw">with</span> <span class="fn">st.expander</span>(<span class="str">"📋 Click to see Test Steps"</span>):
+    <span class="fn">st.write</span>(<span class="str">"Step 1: Login to application"</span>)
+    <span class="fn">st.write</span>(<span class="str">"Step 2: Navigate to dashboard"</span>)
+    <span class="fn">st.write</span>(<span class="str">"Step 3: Verify KPI cards display correctly"</span>)
+    <span class="fn">st.write</span>(<span class="str">"Step 4: Logout"</span>)
+
+<span class="cm"># ── Expander open by default using expanded=True ──────────</span>
+<span class="kw">with</span> <span class="fn">st.expander</span>(<span class="str">"📊 Test Results Summary"</span>, <span class="var">expanded</span><span class="op">=</span><span class="kw">True</span>):
+    <span class="fn">st.success</span>(<span class="str">"✅ 47 tests Passed"</span>)
+    <span class="fn">st.error</span>(<span class="str">"❌ 3 tests Failed"</span>)
+    <span class="fn">st.warning</span>(<span class="str">"⚠️ 2 tests Blocked"</span>)
+
+<span class="cm"># ── Multiple expanders act like an accordion ───────────────</span>
+<span class="var">bugs</span> <span class="op">=</span> [
+    {<span class="str">"id"</span>: <span class="str">"BUG-001"</span>, <span class="str">"title"</span>: <span class="str">"Login fails on Chrome"</span>, <span class="str">"severity"</span>: <span class="str">"High"</span>},
+    {<span class="str">"id"</span>: <span class="str">"BUG-002"</span>, <span class="str">"title"</span>: <span class="str">"Dashboard timeout"</span>,    <span class="str">"severity"</span>: <span class="str">"Medium"</span>},
+    {<span class="str">"id"</span>: <span class="str">"BUG-003"</span>, <span class="str">"title"</span>: <span class="str">"Export button missing"</span>, <span class="str">"severity"</span>: <span class="str">"Low"</span>},
+]
+
+<span class="fn">st.subheader</span>(<span class="str">"🐛 Bug Details"</span>)
+<span class="kw">for</span> <span class="var">bug</span> <span class="kw">in</span> <span class="var">bugs</span>:
+    <span class="kw">with</span> <span class="fn">st.expander</span>(<span class="str">f"{bug['id']} — {bug['title']}"</span>):
+        <span class="fn">st.write</span>(<span class="str">f"**Severity:** {bug['severity']}"</span>)
+        <span class="fn">st.write</span>(<span class="str">"**Status:** Open"</span>)
+        <span class="fn">st.write</span>(<span class="str">"**Assigned to:** Umakant Pandey"</span>)
+        <span class="fn">st.text_area</span>(<span class="str">"Add comment:"</span>, <span class="var">key</span><span class="op">=</span><span class="var">bug</span>[<span class="str">"id"</span>])</pre>
+  </div>
+
+  <div class="box note">
+    <div class="box-label">📘 The "key" parameter</div>
+    Notice <code>key=bug["id"]</code> in the loop above. When you create multiple same-type widgets in a loop, Streamlit needs a unique <code>key</code> for each one to tell them apart. Always set a unique <code>key</code> when creating widgets inside loops!
+  </div>
+</div>
+
+<!-- L05 -->
+<div class="lesson" id="tabs">
+  <div class="lesson-num">Lesson 05</div>
+  <h2>st.tabs() — Tabbed Navigation 🗂️</h2>
+
+  <p>Tabs are like browser tabs or the tabs in an Excel workbook. Users click a tab name to switch between completely different views — without leaving the page or reloading.</p>
+
+  <div class="layout-diagram">
+    <div class="layout-diagram-title">Visual — st.tabs() layout</div>
+    <div class="diag-row" style="gap:2px;margin-bottom:0;">
+      <div class="diag-cell" style="border-radius:8px 8px 0 0;border-bottom:none;padding:0.4rem;">Tab 1</div>
+      <div class="diag-cell purple" style="border-radius:8px 8px 0 0;border-bottom:none;padding:0.4rem;">Tab 2 ← Active</div>
+      <div class="diag-cell green" style="border-radius:8px 8px 0 0;border-bottom:none;padding:0.4rem;">Tab 3</div>
+    </div>
+    <div class="diag-cell purple" style="border-radius:0 0 8px 8px;margin-bottom:6px;padding:1rem;">Content of Tab 2 is shown here</div>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">python — tabs_demo.py</span><div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div></div>
+    <pre><span class="kw">import</span> <span class="cls">streamlit</span> <span class="kw">as</span> <span class="var">st</span>
+
+<span class="fn">st.title</span>(<span class="str">"🗂️ QA Report — Tabbed View"</span>)
+
+<span class="cm"># st.tabs() takes a list of tab names</span>
+<span class="cm"># Returns a list of tab objects — unpack them!</span>
+<span class="var">tab1</span>, <span class="var">tab2</span>, <span class="var">tab3</span>, <span class="var">tab4</span> <span class="op">=</span> <span class="fn">st.tabs</span>([
+    <span class="str">"📊 Summary"</span>,
+    <span class="str">"🐛 Bug Report"</span>,
+    <span class="str">"✅ Test Cases"</span>,
+    <span class="str">"⚙️ Settings"</span>
+])
+
+<span class="kw">with</span> <span class="var">tab1</span>:
+    <span class="fn">st.header</span>(<span class="str">"Test Execution Summary"</span>)
+    <span class="fn">st.success</span>(<span class="str">"Total Tests: 52 | Passed: 47 | Failed: 3 | Blocked: 2"</span>)
+    <span class="fn">st.write</span>(<span class="str">"Overall pass rate: 90.4%"</span>)
+
+<span class="kw">with</span> <span class="var">tab2</span>:
+    <span class="fn">st.header</span>(<span class="str">"Bug Report"</span>)
+    <span class="fn">st.error</span>(<span class="str">"3 open bugs found in this sprint"</span>)
+    <span class="fn">st.write</span>(<span class="str">"• BUG-001: Login fails on Chrome — HIGH"</span>)
+    <span class="fn">st.write</span>(<span class="str">"• BUG-002: Dashboard timeout — MEDIUM"</span>)
+    <span class="fn">st.write</span>(<span class="str">"• BUG-003: Export button missing — LOW"</span>)
+
+<span class="kw">with</span> <span class="var">tab3</span>:
+    <span class="fn">st.header</span>(<span class="str">"Test Case List"</span>)
+    <span class="var">tc_data</span> <span class="op">=</span> {
+        <span class="str">"Test ID"</span>: [<span class="str">"TC-001"</span>, <span class="str">"TC-002"</span>, <span class="str">"TC-003"</span>],
+        <span class="str">"Name"</span>:    [<span class="str">"Login Test"</span>, <span class="str">"Logout Test"</span>, <span class="str">"Dashboard Load"</span>],
+        <span class="str">"Status"</span>:  [<span class="str">"Pass"</span>, <span class="str">"Pass"</span>, <span class="str">"Fail"</span>]
+    }
+    <span class="fn">st.write</span>(<span class="var">tc_data</span>)   <span class="cm"># st.write shows dicts as a nice table!</span>
+
+<span class="kw">with</span> <span class="var">tab4</span>:
+    <span class="fn">st.header</span>(<span class="str">"Settings"</span>)
+    <span class="fn">st.selectbox</span>(<span class="str">"Theme:"</span>, [<span class="str">"Light"</span>, <span class="str">"Dark"</span>])
+    <span class="fn">st.checkbox</span>(<span class="str">"Email notifications"</span>, <span class="var">value</span><span class="op">=</span><span class="kw">True</span>)
+    <span class="fn">st.text_input</span>(<span class="str">"Your email:"</span>)</pre>
+  </div>
+
+  <div class="box tip">
+    <div class="box-label">💡 Tabs vs Expanders — When to use which?</div>
+    Use <strong>Tabs</strong> when content sections are <em>alternatives</em> — user wants to see ONE section at a time (like Summary OR Bug Report, not both).<br/>
+    Use <strong>Expanders</strong> when content is <em>supplementary</em> — user might want to see the main content AND open a detail section simultaneously.
+  </div>
+</div>
+
+<!-- L06 -->
+<div class="lesson" id="container">
+  <div class="lesson-num">Lesson 06</div>
+  <h2>st.container() — Grouping Elements 📦</h2>
+
+  <p>A container is an <strong>invisible box</strong> that groups elements together. You can't see it on screen, but it helps you organise code and control the order elements appear — especially useful when you want to add content in a different order than it appears.</p>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">python — container_demo.py</span><div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div></div>
+    <pre><span class="kw">import</span> <span class="cls">streamlit</span> <span class="kw">as</span> <span class="var">st</span>
+
+<span class="fn">st.title</span>(<span class="str">"Container Demo"</span>)
+
+<span class="cm"># ── Use case 1: Logical grouping ──────────────────────────</span>
+<span class="kw">with</span> <span class="fn">st.container</span>():
+    <span class="fn">st.subheader</span>(<span class="str">"Section A — Inputs"</span>)
+    <span class="fn">st.text_input</span>(<span class="str">"Name:"</span>)
+    <span class="fn">st.number_input</span>(<span class="str">"Age:"</span>, <span class="var">value</span><span class="op">=</span><span class="num">25</span>)
+
+<span class="kw">with</span> <span class="fn">st.container</span>():
+    <span class="fn">st.subheader</span>(<span class="str">"Section B — Options"</span>)
+    <span class="fn">st.selectbox</span>(<span class="str">"Role:"</span>, [<span class="str">"QA Engineer"</span>, <span class="str">"Developer"</span>])
+    <span class="fn">st.checkbox</span>(<span class="str">"Active employee"</span>)
+
+<span class="fn">st.divider</span>()
+
+<span class="cm"># ── Use case 2: Add border around a container ─────────────</span>
+<span class="cm"># border=True draws a visible box around the container</span>
+<span class="kw">with</span> <span class="fn">st.container</span>(<span class="var">border</span><span class="op">=</span><span class="kw">True</span>):
+    <span class="fn">st.subheader</span>(<span class="str">"🧪 Test Run #42"</span>)
+    <span class="fn">st.write</span>(<span class="str">"Environment: QA"</span>)
+    <span class="fn">st.write</span>(<span class="str">"Status: In Progress"</span>)
+    <span class="fn">st.progress</span>(<span class="num">0.65</span>)  <span class="cm"># Shows a 65% filled progress bar</span>
+
+<span class="fn">st.divider</span>()
+
+<span class="cm"># ── Use case 3: Out-of-order writing ─────────────────────</span>
+<span class="cm"># Create a container FIRST, then fill it LATER in the code!</span>
+<span class="var">result_box</span> <span class="op">=</span> <span class="fn">st.container</span>()  <span class="cm"># Reserve the spot at the top</span>
+
+<span class="fn">st.write</span>(<span class="str">"This line appears BELOW the result box on screen."</span>)
+<span class="var">name</span> <span class="op">=</span> <span class="fn">st.text_input</span>(<span class="str">"Type your name:"</span>)
+
+<span class="cm"># Write INTO the container (appears at top, even though code is at bottom!)</span>
+<span class="kw">with</span> <span class="var">result_box</span>:
+    <span class="fn">st.success</span>(<span class="str">f"👋 Hello, {name or 'stranger'}!"</span>)</pre>
+  </div>
+
+  <div class="box note">
+    <div class="box-label">📘 The Out-of-Order Magic</div>
+    The most powerful use of <code>st.container()</code> is writing content <strong>out of order</strong>. Create the container early in the code to reserve a spot on the page, then fill it later. The result appears at the top even though the code writing it is at the bottom. Very useful for showing dynamic results!
+  </div>
+</div>
+
+<!-- L07 -->
+<div class="lesson" id="empty">
+  <div class="lesson-num">Lesson 07</div>
+  <h2>st.empty() — Placeholder That Updates ⬜</h2>
+
+  <p><code>st.empty()</code> creates a single-element placeholder. You can overwrite it as many times as you like — the new content replaces the old one in the same spot. Great for live updates, countdowns, or status messages that change.</p>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">python — empty_demo.py</span><div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div></div>
+    <pre><span class="kw">import</span> <span class="cls">streamlit</span> <span class="kw">as</span> <span class="var">st</span>
+<span class="kw">import</span> <span class="cls">time</span>
+
+<span class="fn">st.title</span>(<span class="str">"Empty Placeholder Demo"</span>)
+
+<span class="cm"># ── Use case 1: Dynamic status message ────────────────────</span>
+<span class="var">status</span> <span class="op">=</span> <span class="fn">st.empty</span>()   <span class="cm"># Reserve a spot</span>
+<span class="var">status</span>.<span class="fn">info</span>(<span class="str">"⏳ Ready to start..."</span>)  <span class="cm"># Initial state</span>
+
+<span class="kw">if</span> <span class="fn">st.button</span>(<span class="str">"Run Test Suite"</span>):
+    <span class="var">status</span>.<span class="fn">warning</span>(<span class="str">"🔄 Tests running..."</span>)
+    <span class="fn">time.sleep</span>(<span class="num">2</span>)   <span class="cm"># Simulate test execution</span>
+    <span class="var">status</span>.<span class="fn">success</span>(<span class="str">"✅ All tests complete!"</span>)
+
+<span class="fn">st.divider</span>()
+
+<span class="cm"># ── Use case 2: Countdown timer ───────────────────────────</span>
+<span class="kw">if</span> <span class="fn">st.button</span>(<span class="str">"Start 5-second countdown"</span>):
+    <span class="var">placeholder</span> <span class="op">=</span> <span class="fn">st.empty</span>()
+    <span class="kw">for</span> <span class="var">i</span> <span class="kw">in</span> <span class="fn">range</span>(<span class="num">5</span>, <span class="num">0</span>, <span class="op">-</span><span class="num">1</span>):
+        <span class="var">placeholder</span>.<span class="fn">metric</span>(<span class="str">"Countdown"</span>, <span class="str">f"{i} seconds"</span>)
+        <span class="fn">time.sleep</span>(<span class="num">1</span>)
+    <span class="var">placeholder</span>.<span class="fn">success</span>(<span class="str">"🚀 Launch!"</span>)
+
+<span class="fn">st.divider</span>()
+
+<span class="cm"># ── Use case 3: Clear a message ───────────────────────────</span>
+<span class="var">msg</span> <span class="op">=</span> <span class="fn">st.empty</span>()
+<span class="kw">if</span> <span class="fn">st.button</span>(<span class="str">"Show message"</span>):
+    <span class="var">msg</span>.<span class="fn">success</span>(<span class="str">"Hello!"</span>)
+<span class="kw">if</span> <span class="fn">st.button</span>(<span class="str">"Clear message"</span>):
+    <span class="var">msg</span>.<span class="fn">empty</span>()  <span class="cm"># Call .empty() on it to CLEAR the content</span></pre>
+  </div>
+
+  <div class="box tip">
+    <div class="box-label">💡 container vs empty — Key difference</div>
+    <code>st.container()</code> can hold <strong>multiple elements</strong>. You keep adding to it.<br/>
+    <code>st.empty()</code> holds exactly <strong>ONE element</strong>. Each new write <em>replaces</em> the previous one.
+  </div>
+</div>
+
+<!-- L08 -->
+<div class="lesson" id="pageconfig">
+  <div class="lesson-num">Lesson 08</div>
+  <h2>st.set_page_config() — App Settings 🎛️</h2>
+
+  <p>This is the first function you should call in every Streamlit app. It sets the browser tab title, the favicon icon, the layout width, and the sidebar default state. <strong>It must be the very first Streamlit command in your script.</strong></p>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">python — always put this FIRST in every app!</span><div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div></div>
+    <pre><span class="kw">import</span> <span class="cls">streamlit</span> <span class="kw">as</span> <span class="var">st</span>
+
+<span class="cm"># ── MUST be the FIRST st.* call in your script ─────────────</span>
+<span class="fn">st.set_page_config</span>(
+    <span class="var">page_title</span><span class="op">=</span><span class="str">"QA Dashboard"</span>,          <span class="cm"># Browser tab title</span>
+    <span class="var">page_icon</span><span class="op">=</span><span class="str">"🛡️"</span>,                    <span class="cm"># Favicon — emoji or image path</span>
+    <span class="var">layout</span><span class="op">=</span><span class="str">"wide"</span>,                      <span class="cm"># "centered" (default) or "wide"</span>
+    <span class="var">initial_sidebar_state</span><span class="op">=</span><span class="str">"expanded"</span>,  <span class="cm"># "expanded" or "collapsed"</span>
+    <span class="var">menu_items</span><span class="op">=</span>{                         <span class="cm"># Custom hamburger menu items</span>
+        <span class="str">'Get Help'</span>: <span class="str">'https://streamlit.io/docs'</span>,
+        <span class="str">'About'</span>: <span class="str">"QA Dashboard built by Umakant Pandey"</span>
+    }
+)
+
+<span class="cm"># Now the rest of your app code goes below</span>
+<span class="fn">st.title</span>(<span class="str">"🛡️ QA Dashboard"</span>)</pre>
+  </div>
+
+  <table>
+    <thead><tr><th>Parameter</th><th>What it controls</th><th>Options</th></tr></thead>
+    <tbody>
+      <tr><td><code>page_title</code></td><td>Text shown in browser tab</td><td>Any string</td></tr>
+      <tr><td><code>page_icon</code></td><td>Favicon in browser tab</td><td>Emoji string or image path</td></tr>
+      <tr><td><code>layout</code></td><td>Page width</td><td><code>"centered"</code> (narrow, default) or <code>"wide"</code> (full width)</td></tr>
+      <tr><td><code>initial_sidebar_state</code></td><td>Sidebar open or closed on load</td><td><code>"expanded"</code> or <code>"collapsed"</code></td></tr>
+      <tr><td><code>menu_items</code></td><td>Custom links in the ☰ hamburger menu</td><td>Dict with keys: Get Help, Report a bug, About</td></tr>
+    </tbody>
+  </table>
+
+  <div class="box warn">
+    <div class="box-label">⚠️ Rule — First Line Always</div>
+    <code>st.set_page_config()</code> <strong>must be the very first Streamlit function call</strong> in your script. If you call <code>st.title()</code> or any other <code>st.*</code> function before it, you will get an error! Always put it right after your imports.
+  </div>
+</div>
+
+<!-- L09 -->
+<div class="lesson" id="metrics">
+  <div class="lesson-num">Lesson 09</div>
+  <h2>st.metric() — KPI Cards 📊</h2>
+
+  <p>Metric cards are those large-number display blocks you see on dashboards — like "Total Sales: ₹1.2M ▲5%". <code>st.metric()</code> creates exactly that. Used almost always inside columns to create side-by-side KPI cards.</p>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">python — metric_demo.py</span><div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div></div>
+    <pre><span class="kw">import</span> <span class="cls">streamlit</span> <span class="kw">as</span> <span class="var">st</span>
+
+<span class="fn">st.title</span>(<span class="str">"📊 QA KPI Dashboard"</span>)
+
+<span class="cm"># ── Three metric cards side by side ───────────────────────</span>
+<span class="var">col1</span>, <span class="var">col2</span>, <span class="var">col3</span>, <span class="var">col4</span> <span class="op">=</span> <span class="fn">st.columns</span>(<span class="num">4</span>)
+
+<span class="kw">with</span> <span class="var">col1</span>:
+    <span class="fn">st.metric</span>(
+        <span class="var">label</span><span class="op">=</span><span class="str">"Total Tests"</span>,
+        <span class="var">value</span><span class="op">=</span><span class="str">"52"</span>,
+        <span class="var">delta</span><span class="op">=</span><span class="str">"+8 from last sprint"</span>   <span class="cm"># Green arrow up</span>
+    )
+
+<span class="kw">with</span> <span class="var">col2</span>:
+    <span class="fn">st.metric</span>(
+        <span class="var">label</span><span class="op">=</span><span class="str">"Tests Passed"</span>,
+        <span class="var">value</span><span class="op">=</span><span class="str">"47"</span>,
+        <span class="var">delta</span><span class="op">=</span><span class="str">"+5"</span>   <span class="cm"># Positive = green arrow ▲</span>
+    )
+
+<span class="kw">with</span> <span class="var">col3</span>:
+    <span class="fn">st.metric</span>(
+        <span class="var">label</span><span class="op">=</span><span class="str">"Tests Failed"</span>,
+        <span class="var">value</span><span class="op">=</span><span class="str">"3"</span>,
+        <span class="var">delta</span><span class="op">=</span><span class="str">"-2"</span>,              <span class="cm"># Negative = red arrow ▼</span>
+        <span class="var">delta_color</span><span class="op">=</span><span class="str">"inverse"</span>   <span class="cm"># "inverse" = down is GOOD here!</span>
+    )
+
+<span class="kw">with</span> <span class="var">col4</span>:
+    <span class="fn">st.metric</span>(
+        <span class="var">label</span><span class="op">=</span><span class="str">"Pass Rate"</span>,
+        <span class="var">value</span><span class="op">=</span><span class="str">"90.4%"</span>,
+        <span class="var">delta</span><span class="op">=</span><span class="str">"2.1%"</span>,
+        <span class="var">delta_color</span><span class="op">=</span><span class="str">"normal"</span>    <span class="cm"># "normal" (default), "inverse", "off"</span>
+    )</pre>
+  </div>
+
+  <table>
+    <thead><tr><th>Parameter</th><th>What it shows</th></tr></thead>
+    <tbody>
+      <tr><td><code>label</code></td><td>Small text above the big number (e.g. "Total Tests")</td></tr>
+      <tr><td><code>value</code></td><td>The big number/text displayed prominently</td></tr>
+      <tr><td><code>delta</code></td><td>Change indicator — shown with green ▲ or red ▼ arrow</td></tr>
+      <tr><td><code>delta_color="normal"</code></td><td>Positive = green, negative = red (default)</td></tr>
+      <tr><td><code>delta_color="inverse"</code></td><td>Positive = red, negative = green (use when DOWN is good, like "bugs fixed")</td></tr>
+      <tr><td><code>delta_color="off"</code></td><td>Shows delta in grey with no colour</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- L10 — PROJECT -->
+<div class="lesson" id="project">
+  <div class="lesson-num">Lesson 10</div>
+  <h2>🏗️ Mini Project — Full QA Dashboard</h2>
+
+  <p>Now let's combine <strong>everything from Day 1, 2, and 3</strong> into one real QA dashboard. This is the kind of app you can actually use at work or show to your team!</p>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">python — qa_dashboard.py — your Day 3 project!</span><div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div></div>
+    <pre><span class="kw">import</span> <span class="cls">streamlit</span> <span class="kw">as</span> <span class="var">st</span>
+<span class="kw">import</span> <span class="cls">datetime</span>
+
+<span class="cm"># ── Page Config — always first! ───────────────────────────</span>
+<span class="fn">st.set_page_config</span>(
+    <span class="var">page_title</span><span class="op">=</span><span class="str">"QA Dashboard"</span>,
+    <span class="var">page_icon</span><span class="op">=</span><span class="str">"🛡️"</span>,
+    <span class="var">layout</span><span class="op">=</span><span class="str">"wide"</span>,
+    <span class="var">initial_sidebar_state</span><span class="op">=</span><span class="str">"expanded"</span>
+)
+
+<span class="cm"># ── SIDEBAR — Filters ─────────────────────────────────────</span>
+<span class="kw">with</span> <span class="var">st.sidebar</span>:
+    <span class="fn">st.title</span>(<span class="str">"🛡️ QA Dashboard"</span>)
+    <span class="fn">st.caption</span>(<span class="str">"By Umakant Pandey"</span>)
+    <span class="fn">st.divider</span>()
+
+    <span class="var">project</span> <span class="op">=</span> <span class="fn">st.selectbox</span>(
+        <span class="str">"Project:"</span>,
+        [<span class="str">"ICAPS (Citi Bank)"</span>, <span class="str">"IBSG (Citi Bank)"</span>, <span class="str">"Lumen Sky"</span>]
+    )
+    <span class="var">sprint</span> <span class="op">=</span> <span class="fn">st.number_input</span>(<span class="str">"Sprint:"</span>, <span class="var">min_value</span><span class="op">=</span><span class="num">1</span>, <span class="var">value</span><span class="op">=</span><span class="num">42</span>)
+    <span class="var">env</span> <span class="op">=</span> <span class="fn">st.radio</span>(<span class="str">"Environment:"</span>,
+                   [<span class="str">"DEV"</span>, <span class="str">"QA"</span>, <span class="str">"STAGING"</span>], <span class="var">horizontal</span><span class="op">=</span><span class="kw">True</span>)
+    <span class="var">date_range</span> <span class="op">=</span> <span class="fn">st.date_input</span>(
+        <span class="str">"Test Window:"</span>,
+        <span class="var">value</span><span class="op">=</span>(<span class="cls">datetime</span>.<span class="fn">date</span>.<span class="fn">today</span>(), <span class="cls">datetime</span>.<span class="fn">date</span>.<span class="fn">today</span>())
+    )
+    <span class="fn">st.divider</span>()
+    <span class="var">tester</span> <span class="op">=</span> <span class="fn">st.text_input</span>(<span class="str">"Tester Name:"</span>, <span class="var">value</span><span class="op">=</span><span class="str">"Umakant Pandey"</span>)
+
+<span class="cm"># ── MAIN AREA ─────────────────────────────────────────────</span>
+<span class="fn">st.title</span>(<span class="str">f"📊 {project} — Sprint {sprint} Report"</span>)
+<span class="fn">st.caption</span>(<span class="str">f"Environment: {env}  |  Tester: {tester}"</span>)
+<span class="fn">st.divider</span>()
+
+<span class="cm"># ── KPI CARDS row ─────────────────────────────────────────</span>
+<span class="var">k1</span>, <span class="var">k2</span>, <span class="var">k3</span>, <span class="var">k4</span> <span class="op">=</span> <span class="fn">st.columns</span>(<span class="num">4</span>)
+<span class="kw">with</span> <span class="var">k1</span>: <span class="fn">st.metric</span>(<span class="str">"Total Tests"</span>,  <span class="str">"52"</span>,  <span class="str">"+8"</span>)
+<span class="kw">with</span> <span class="var">k2</span>: <span class="fn">st.metric</span>(<span class="str">"Passed"</span>,       <span class="str">"47"</span>,  <span class="str">"+5"</span>)
+<span class="kw">with</span> <span class="var">k3</span>: <span class="fn">st.metric</span>(<span class="str">"Failed"</span>,       <span class="str">"3"</span>,   <span class="str">"-2"</span>, <span class="var">delta_color</span><span class="op">=</span><span class="str">"inverse"</span>)
+<span class="kw">with</span> <span class="var">k4</span>: <span class="fn">st.metric</span>(<span class="str">"Pass Rate"</span>,    <span class="str">"90.4%"</span>, <span class="str">"↑2.1%"</span>)
+
+<span class="fn">st.divider</span>()
+
+<span class="cm"># ── TABBED SECTIONS ───────────────────────────────────────</span>
+<span class="var">t1</span>, <span class="var">t2</span>, <span class="var">t3</span> <span class="op">=</span> <span class="fn">st.tabs</span>([<span class="str">"✅ Test Cases"</span>, <span class="str">"🐛 Bugs"</span>, <span class="str">"📝 Add Report"</span>])
+
+<span class="kw">with</span> <span class="var">t1</span>:
+    <span class="var">left</span>, <span class="var">right</span> <span class="op">=</span> <span class="fn">st.columns</span>([<span class="num">3</span>, <span class="num">1</span>])
+    <span class="kw">with</span> <span class="var">left</span>:
+        <span class="fn">st.subheader</span>(<span class="str">"Test Case Results"</span>)
+        <span class="var">data</span> <span class="op">=</span> {
+            <span class="str">"TC ID"</span>:  [<span class="str">"TC-001"</span>,<span class="str">"TC-002"</span>,<span class="str">"TC-003"</span>,<span class="str">"TC-004"</span>],
+            <span class="str">"Name"</span>:   [<span class="str">"Login"</span>,<span class="str">"Logout"</span>,<span class="str">"Dashboard"</span>,<span class="str">"Export"</span>],
+            <span class="str">"Result"</span>: [<span class="str">"Pass"</span>,<span class="str">"Pass"</span>,<span class="str">"Fail"</span>,<span class="str">"Pass"</span>],
+            <span class="str">"Time(s)"</span>:[<span class="num">2.3</span>,<span class="num">1.1</span>,<span class="num">5.8</span>,<span class="num">3.2</span>]
+        }
+        <span class="fn">st.write</span>(<span class="var">data</span>)
+    <span class="kw">with</span> <span class="var">right</span>:
+        <span class="fn">st.subheader</span>(<span class="str">"Filter"</span>)
+        <span class="fn">st.radio</span>(<span class="str">"Show:"</span>, [<span class="str">"All"</span>,<span class="str">"Pass"</span>,<span class="str">"Fail"</span>])
+
+<span class="kw">with</span> <span class="var">t2</span>:
+    <span class="fn">st.subheader</span>(<span class="str">"Open Bugs"</span>)
+    <span class="var">bugs</span> <span class="op">=</span> [
+        (<span class="str">"BUG-001"</span>, <span class="str">"Login fails on Chrome"</span>, <span class="str">"🔴 High"</span>),
+        (<span class="str">"BUG-002"</span>, <span class="str">"Dashboard timeout"</span>,    <span class="str">"🟡 Medium"</span>),
+        (<span class="str">"BUG-003"</span>, <span class="str">"Export button missing"</span>, <span class="str">"🟢 Low"</span>),
+    ]
+    <span class="kw">for</span> <span class="var">bid</span>, <span class="var">btitle</span>, <span class="var">bsev</span> <span class="kw">in</span> <span class="var">bugs</span>:
+        <span class="kw">with</span> <span class="fn">st.expander</span>(<span class="str">f"{bid}: {btitle} — {bsev}"</span>):
+            <span class="fn">st.write</span>(<span class="str">f"**Severity:** {bsev}"</span>)
+            <span class="fn">st.write</span>(<span class="str">"**Assigned to:** Umakant Pandey"</span>)
+            <span class="fn">st.text_area</span>(<span class="str">"Comment:"</span>, <span class="var">key</span><span class="op">=</span><span class="var">bid</span>)
+
+<span class="kw">with</span> <span class="var">t3</span>:
+    <span class="fn">st.subheader</span>(<span class="str">"Add Test Report Entry"</span>)
+    <span class="var">c1</span>, <span class="var">c2</span> <span class="op">=</span> <span class="fn">st.columns</span>(<span class="num">2</span>)
+    <span class="kw">with</span> <span class="var">c1</span>:
+        <span class="fn">st.text_input</span>(<span class="str">"Test Case ID:"</span>)
+        <span class="fn">st.selectbox</span>(<span class="str">"Result:"</span>, [<span class="str">"Pass"</span>,<span class="str">"Fail"</span>,<span class="str">"Blocked"</span>,<span class="str">"Skip"</span>])
+    <span class="kw">with</span> <span class="var">c2</span>:
+        <span class="fn">st.text_input</span>(<span class="str">"Test Case Name:"</span>)
+        <span class="fn">st.number_input</span>(<span class="str">"Execution time (s):"</span>, <span class="var">min_value</span><span class="op">=</span><span class="num">0.0</span>, <span class="var">step</span><span class="op">=</span><span class="num">0.1</span>)
+    <span class="fn">st.text_area</span>(<span class="str">"Notes / Error Description:"</span>)
+    <span class="kw">if</span> <span class="fn">st.button</span>(<span class="str">"📥 Submit Entry"</span>, <span class="var">type</span><span class="op">=</span><span class="str">"primary"</span>):
+        <span class="fn">st.success</span>(<span class="str">"✅ Report entry submitted successfully!"</span>)</pre>
+  </div>
+
+  <div class="box tip">
+    <div class="box-label">💡 What this project demonstrates</div>
+    This one file combines: <code>set_page_config</code> + <code>sidebar</code> + <code>columns</code> + <code>metric</code> + <code>tabs</code> + <code>expander</code> + <code>widgets from Day 2</code>. Run it and you have a real professional QA dashboard. Change the data to match your actual projects!
+  </div>
+</div>
+
+<!-- CHEAT SHEET -->
+<div class="lesson" id="cheat">
+  <div class="lesson-num">Lesson 11</div>
+  <h2>Day 3 Cheat Sheet 📋</h2>
+  <div class="cheat">
+    <div class="cheat-title">⚡ Layout Quick Reference</div>
+
+    <div class="cheat-section">// Page Config</div>
+    <div class="cheat-row"><div class="cheat-code">st.set_page_config(page_title="X", page_icon="🎯", layout="wide")</div><div class="cheat-desc">Must be FIRST st.* call. Sets browser tab, icon, width</div></div>
+
+    <div class="cheat-section">// Columns</div>
+    <div class="cheat-row"><div class="cheat-code">col1, col2 = st.columns(2)</div><div class="cheat-desc">Two equal columns</div></div>
+    <div class="cheat-row"><div class="cheat-code">col1, col2 = st.columns([2, 1])</div><div class="cheat-desc">Left column is 2x wider than right</div></div>
+    <div class="cheat-row"><div class="cheat-code">with col1: st.write("...")</div><div class="cheat-desc">Put content inside a column</div></div>
+    <div class="cheat-row"><div class="cheat-code">st.columns(3, gap="large")</div><div class="cheat-desc">Add spacing between columns</div></div>
+
+    <div class="cheat-section">// Sidebar</div>
+    <div class="cheat-row"><div class="cheat-code">with st.sidebar: ...</div><div class="cheat-desc">Everything indented here goes in the sidebar</div></div>
+    <div class="cheat-row"><div class="cheat-code">st.sidebar.selectbox("label", [...])</div><div class="cheat-desc">Alternative dot notation for sidebar widgets</div></div>
+
+    <div class="cheat-section">// Expander</div>
+    <div class="cheat-row"><div class="cheat-code">with st.expander("Title"): ...</div><div class="cheat-desc">Collapsible section, closed by default</div></div>
+    <div class="cheat-row"><div class="cheat-code">with st.expander("Title", expanded=True): ...</div><div class="cheat-desc">Collapsible section, open by default</div></div>
+
+    <div class="cheat-section">// Tabs</div>
+    <div class="cheat-row"><div class="cheat-code">t1, t2 = st.tabs(["Tab A", "Tab B"])</div><div class="cheat-desc">Create two tabs, returns tab objects</div></div>
+    <div class="cheat-row"><div class="cheat-code">with t1: st.write("...")</div><div class="cheat-desc">Content inside tab 1</div></div>
+
+    <div class="cheat-section">// Container and Empty</div>
+    <div class="cheat-row"><div class="cheat-code">with st.container(): ...</div><div class="cheat-desc">Group elements (invisible box)</div></div>
+    <div class="cheat-row"><div class="cheat-code">with st.container(border=True): ...</div><div class="cheat-desc">Group elements with a visible border</div></div>
+    <div class="cheat-row"><div class="cheat-code">slot = st.empty()</div><div class="cheat-desc">Create a placeholder spot</div></div>
+    <div class="cheat-row"><div class="cheat-code">slot.success("done!")</div><div class="cheat-desc">Fill the placeholder (overwrites previous content)</div></div>
+    <div class="cheat-row"><div class="cheat-code">slot.empty()</div><div class="cheat-desc">Clear the placeholder content</div></div>
+
+    <div class="cheat-section">// Metric Cards</div>
+    <div class="cheat-row"><div class="cheat-code">st.metric("Label", "Value", "delta")</div><div class="cheat-desc">Big KPI card with change indicator arrow</div></div>
+    <div class="cheat-row"><div class="cheat-code">st.metric(..., delta_color="inverse")</div><div class="cheat-desc">Flip colours (use when lower is better)</div></div>
+
+    <div class="cheat-section">// Other Useful Bits</div>
+    <div class="cheat-row"><div class="cheat-code">st.progress(0.75)</div><div class="cheat-desc">Progress bar at 75%</div></div>
+    <div class="cheat-row"><div class="cheat-code">key=unique_string</div><div class="cheat-desc">Give widgets in loops a unique key</div></div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div class="lesson" id="quiz">
+  <div class="lesson-num">Lesson 12</div>
+  <h2>Mini Quiz 🧠</h2>
+  <div class="quiz">
+    <div class="quiz-title">✏️ Test Yourself — Day 3</div>
+    <ol>
+      <li>What does <code>st.columns([2, 1])</code> create? How wide is each column relative to the other?</li>
+      <li>What keyword do you use to put content inside a column? Write an example.</li>
+      <li>What is the sidebar best used for?</li>
+      <li>What is the difference between <code>st.expander()</code> and <code>st.tabs()</code>? When would you choose one over the other?</li>
+      <li>What is <code>st.empty()</code> used for? How is it different from <code>st.container()</code>?</li>
+      <li>What rule must you follow with <code>st.set_page_config()</code>?</li>
+      <li>What parameter in <code>st.metric()</code> shows the change indicator (arrow up/down)?</li>
+      <li>Why do widgets inside a <code>for</code> loop need a <code>key</code> parameter?</li>
+    </ol>
+    <details class="quiz-ans">
+      <summary>👀 Reveal Answers</summary>
+      <ol style="margin-top:0.8rem;margin-left:1.2rem;font-size:0.88rem;color:#155724;">
+        <li>Two columns where the left is <strong>twice as wide</strong> as the right (2/3 vs 1/3 of page width).</li>
+        <li>The <code>with</code> keyword. Example: <code>with col1: st.write("Hello")</code></li>
+        <li>Filters, navigation, settings, and controls — things that affect the main content but shouldn't clutter it.</li>
+        <li><strong>Expanders</strong> can all be open simultaneously on the same page. <strong>Tabs</strong> show only ONE tab at a time. Use tabs for alternative views, expanders for supplementary details.</li>
+        <li><code>st.empty()</code> holds ONE element and replaces it each time you write to it. <code>st.container()</code> can hold many elements and you keep adding to it.</li>
+        <li>It must be the <strong>very first</strong> Streamlit function call in your script — before any other <code>st.*</code> call.</li>
+        <li>The <code>delta</code> parameter.</li>
+        <li>Streamlit uses keys to identify each widget internally. Without unique keys, multiple widgets of the same type in a loop would conflict and cause errors.</li>
+      </ol>
+    </details>
+  </div>
+</div>
+
+<!-- HOMEWORK -->
+<div class="lesson" id="hw">
+  <div class="lesson-num">Lesson 13</div>
+  <h2>Homework 🏠</h2>
+  <div class="homework">
+    <div class="hw-title">📌 Day 3 Homework</div>
+    <div class="hw-subtitle">// complete before Day 4 · estimated 45–60 mins</div>
+    <ul class="hw-list">
+      <li>Take your Day 2 homework (QA Test Summary Form) and <strong>redesign it with proper layout</strong>. Add a sidebar for all filters/inputs, and show the results in the main area.</li>
+      <li>Add <code>st.set_page_config()</code> at the top with a relevant page title, emoji icon, and <code>layout="wide"</code>.</li>
+      <li>Create a <strong>KPI row</strong> using <code>st.columns(4)</code> and <code>st.metric()</code> showing: Total Test Cases, Passed, Failed, and Pass Rate %.</li>
+      <li>Add <strong>two tabs</strong>: one called "Test Summary" (show the form + KPIs) and one called "About" (show your name, experience, and skills using Day 1 text elements).</li>
+      <li>Use <code>st.expander()</code> inside the Test Summary tab to hide/show "Detailed Notes" or "Raw Input Data".</li>
+      <li><strong>Bonus:</strong> Add <code>st.container(border=True)</code> around the KPI cards section to give it a card-like box appearance.</li>
+    </ul>
+  </div>
+  <div class="box tip">
+    <div class="box-label">👨‍🏫 Trainer's Note</div>
+    By the end of Day 3 homework, you will have a proper multi-section QA dashboard with sidebar, tabs, metrics, and expanders. This is a <strong>portfolio-worthy app</strong> — something you can genuinely show at interviews or to your manager. Save it!
+  </div>
+  <p style="margin-top:1.5rem;color:var(--muted);font-size:0.9rem;">
+    📅 <strong>Coming up on Day 4:</strong> Data Display — <code>st.dataframe()</code>, <code>st.table()</code>, <code>st.json()</code>, displaying Pandas DataFrames interactively, sorting, filtering. Your QA data will come alive!
+  </p>
+</div>
+
+</main>
+
+<footer>
+  <p>🐍 Python Trainer Series &nbsp;·&nbsp; <span>Streamlit in 30 Days</span> &nbsp;·&nbsp; Day 3 of 30</p>
+  <p style="margin-top:0.4rem;color:#1e293b;">Personalised notes for Umakant Pandey &nbsp;·&nbsp; Keep practising every day!</p>
+</footer>
+
+</body>
+</html>
