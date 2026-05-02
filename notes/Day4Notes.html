@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Streamlit – Day 4 Notes | Data Display</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Lora:ital,wght@0,400;0,600;1,400&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#f4f7f2;--paper:#fafcf8;--ink:#141a10;--muted:#6a7a65;
+  --accent:#2e7d32;--accent2:#1565c0;--highlight:#f9fbe7;
+  --code-bg:#1e2a1e;--code-fg:#c8e6c9;--border:#d4e0ce;
+  --note-bg:#e8f5e9;--note-border:#43a047;
+  --tip-bg:#e3f2fd;--tip-border:#1976d2;
+  --warn-bg:#fff8e1;--warn-border:#f9a825;
+  --purple:#6a1b9a;--orange:#e65100;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--ink);font-family:'Lora',Georgia,serif;font-size:17px;line-height:1.85;}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:var(--ink);padding:0.7rem 2rem;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px rgba(0,0,0,0.3);}
+.nav-brand{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:#fff;letter-spacing:0.05em;}
+.nav-brand span{color:#81c784;}
+.nav-day{font-family:'Fira Code',monospace;font-size:0.75rem;color:#aaa;background:rgba(255,255,255,0.07);border-radius:20px;padding:0.25rem 0.8rem;}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#0a1f0a 0%,#0d2b3e 60%,#0a1f0a 100%);color:#fff;padding:4rem 5rem 3.5rem;position:relative;overflow:hidden;}
+.hero::before{content:"";position:absolute;top:-80px;right:-80px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(46,125,50,0.28) 0%,transparent 70%);}
+.hero::after{content:"";position:absolute;bottom:-60px;left:5%;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(21,101,192,0.15) 0%,transparent 70%);}
+.hero-eyebrow{font-family:'Fira Code',monospace;font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:#81c784;margin-bottom:0.8rem;}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(2.2rem,5vw,3.6rem);font-weight:800;line-height:1.1;margin-bottom:0.8rem;letter-spacing:-0.02em;}
+.hero h1 em{color:#81c784;font-style:normal;}
+.hero p{color:#bbb;font-family:'Lora',serif;font-size:1rem;max-width:640px;margin-bottom:1.5rem;}
+.hero-pills{display:flex;flex-wrap:wrap;gap:0.5rem;}
+.pill{font-family:'Fira Code',monospace;font-size:0.72rem;padding:0.3rem 0.8rem;border-radius:20px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#ddd;}
+
+/* PROGRESS */
+.progress-section{background:var(--paper);border-bottom:1px solid var(--border);padding:1.2rem 5rem;}
+.progress-label{font-family:'Fira Code',monospace;font-size:0.72rem;color:var(--muted);margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.1em;}
+.progress-track{display:flex;gap:0.3rem;align-items:center;}
+.prog-day{flex:1;height:6px;border-radius:3px;background:var(--border);}
+.prog-day.done{background:var(--accent);}
+.prog-day.current{background:var(--accent2);}
+.prog-nums{font-family:'Fira Code',monospace;font-size:0.7rem;color:var(--muted);margin-left:0.6rem;}
+
+/* TOC */
+.toc-wrap{max-width:880px;margin:2.5rem auto;padding:0 2rem;}
+.toc-card{background:var(--paper);border:1px solid var(--border);border-radius:12px;padding:1.5rem 2rem;}
+.toc-title{font-family:'Syne',sans-serif;font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);margin-bottom:1rem;}
+.toc-list{list-style:none;}
+.toc-list li{display:flex;align-items:center;gap:0.6rem;padding:0.35rem 0;border-bottom:1px dashed var(--border);font-size:0.92rem;}
+.toc-list li:last-child{border-bottom:none;}
+.toc-num{font-family:'Fira Code',monospace;font-size:0.7rem;color:var(--accent);min-width:28px;}
+.toc-list a{color:var(--ink);text-decoration:none;}
+.toc-list a:hover{color:var(--accent);}
+
+/* MAIN */
+main{max-width:880px;margin:0 auto;padding:0 2rem 4rem;}
+.lesson{margin-top:3rem;padding-top:2rem;border-top:2px solid var(--border);}
+.lesson:first-of-type{border-top:none;}
+.lesson-num{font-family:'Fira Code',monospace;font-size:0.7rem;color:var(--accent);text-transform:uppercase;letter-spacing:0.15em;margin-bottom:0.4rem;}
+.lesson h2{font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:800;color:var(--ink);margin-bottom:1rem;line-height:1.15;}
+p{margin-bottom:1rem;color:#1a2a16;}
+
+/* BOXES */
+.box{border-left:4px solid;border-radius:0 10px 10px 0;padding:1rem 1.3rem;margin:1.5rem 0;font-size:0.93rem;}
+.box-label{font-family:'Syne',sans-serif;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:0.4rem;}
+.note{background:var(--note-bg);border-color:var(--note-border);}.note .box-label{color:var(--note-border);}
+.tip{background:var(--tip-bg);border-color:var(--tip-border);}.tip .box-label{color:var(--tip-border);}
+.warn{background:var(--warn-bg);border-color:var(--warn-border);}.warn .box-label{color:var(--warn-border);}
+.think{background:#f3e5f5;border-color:var(--purple);}.think .box-label{color:var(--purple);}
+.orange-box{background:#fff3e0;border-color:var(--orange);}.orange-box .box-label{color:var(--orange);}
+
+/* ANALOGY */
+.analogy{background:var(--highlight);border:1px solid #c5e1a5;border-radius:10px;padding:1rem 1.3rem;margin:1.5rem 0;font-size:0.93rem;}
+.analogy-label{font-family:'Syne',sans-serif;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#558b2f;margin-bottom:0.3rem;}
+
+/* CODE */
+.code-wrap{background:var(--code-bg);border-radius:10px;overflow:hidden;margin:1.5rem 0;box-shadow:0 4px 20px rgba(0,0,0,0.25);}
+.code-header{background:#111a11;padding:0.55rem 1.2rem;display:flex;justify-content:space-between;align-items:center;}
+.code-lang{font-family:'Fira Code',monospace;font-size:0.68rem;color:#5a7a5a;text-transform:uppercase;letter-spacing:0.1em;}
+.code-dots{display:flex;gap:5px;}
+.code-dots span{width:10px;height:10px;border-radius:50%;}
+.dot-r{background:#ff5f57;}.dot-y{background:#febc2e;}.dot-g{background:#28c840;}
+pre{padding:1.3rem 1.5rem;overflow-x:auto;font-family:'Fira Code',monospace;font-size:0.84rem;line-height:1.7;color:var(--code-fg);}
+.kw{color:#ce93d8;}.fn{color:#90caf9;}.str{color:#a5d6a7;}.cm{color:#4a6a4a;font-style:italic;}
+.num{color:#ffcc80;}.var{color:#ef9a9a;}.cls{color:#fff59d;}.op{color:#80deea;}.dec{color:#f48fb1;}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse;margin:1.5rem 0;font-size:0.88rem;}
+th{background:var(--ink);color:#fff;font-family:'Syne',sans-serif;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;padding:0.65rem 1rem;text-align:left;}
+td{padding:0.65rem 1rem;border-bottom:1px solid var(--border);background:var(--paper);vertical-align:top;}
+tr:nth-child(even) td{background:#eef4ec;}
+td code{font-family:'Fira Code',monospace;font-size:0.8rem;background:var(--bg);padding:0.1rem 0.4rem;border-radius:4px;color:var(--orange);}
+
+/* COMPARISON CARD */
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.5rem 0;}
+.compare-card{border-radius:12px;padding:1.3rem 1.5rem;border:2px solid;}
+.compare-card.blue{background:#e3f2fd;border-color:#1976d2;}
+.compare-card.green{background:#e8f5e9;border-color:#43a047;}
+.compare-card h4{font-family:'Syne',sans-serif;font-size:0.85rem;font-weight:800;margin-bottom:0.6rem;text-transform:uppercase;letter-spacing:0.08em;}
+.compare-card.blue h4{color:#1565c0;}
+.compare-card.green h4{color:#2e7d32;}
+.compare-card ul{margin-left:1.2rem;font-size:0.85rem;color:#333;}
+.compare-card li{margin-bottom:0.3rem;}
+
+/* PANDAS VISUAL */
+.df-visual{background:var(--paper);border:2px solid var(--border);border-radius:10px;overflow:hidden;margin:1.5rem 0;font-family:'Fira Code',monospace;font-size:0.82rem;}
+.df-header{background:var(--ink);color:#fff;display:grid;gap:1px;padding:0;}
+.df-header-row{display:grid;grid-template-columns:60px repeat(4,1fr);background:var(--ink);}
+.df-th{padding:0.5rem 0.8rem;color:#81c784;font-size:0.78rem;font-weight:600;}
+.df-th.idx{color:#888;}
+.df-body-row{display:grid;grid-template-columns:60px repeat(4,1fr);border-bottom:1px solid var(--border);}
+.df-body-row:nth-child(even){background:#eef4ec;}
+.df-td{padding:0.45rem 0.8rem;font-size:0.8rem;color:#333;}
+.df-td.idx{color:#888;border-right:1px solid var(--border);}
+.df-td.pass{color:#2e7d32;font-weight:600;}
+.df-td.fail{color:#c62828;font-weight:600;}
+
+/* FEATURE CARDS */
+.feature-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin:1.5rem 0;}
+.feature-card{background:var(--paper);border:1px solid var(--border);border-radius:12px;padding:1.2rem 1.3rem;border-top:3px solid var(--accent);}
+.feature-icon{font-size:1.8rem;margin-bottom:0.5rem;}
+.feature-name{font-family:'Fira Code',monospace;font-size:0.8rem;color:var(--accent);font-weight:600;margin-bottom:0.3rem;}
+.feature-desc{font-size:0.82rem;color:var(--muted);line-height:1.5;}
+
+/* STEPS */
+.steps{counter-reset:step;list-style:none;margin:1.2rem 0;}
+.steps li{counter-increment:step;display:flex;gap:1rem;margin-bottom:1rem;align-items:flex-start;}
+.steps li::before{content:counter(step);min-width:28px;height:28px;background:var(--accent);color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:0.78rem;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:0.1rem;}
+
+/* QUIZ */
+.quiz{background:var(--paper);border:2px solid var(--ink);border-radius:12px;padding:1.5rem 2rem;margin:2rem 0;}
+.quiz-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;margin-bottom:1rem;}
+.quiz ol{margin-left:1.2rem;font-size:0.9rem;}
+.quiz li{margin-bottom:0.5rem;}
+.quiz-ans{margin-top:1rem;padding:0.8rem 1rem;background:var(--tip-bg);border-radius:8px;font-size:0.85rem;border:1px solid var(--tip-border);}
+.quiz-ans summary{font-family:'Syne',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;color:var(--tip-border);text-transform:uppercase;letter-spacing:0.08em;}
+
+/* CHEAT */
+.cheat{background:var(--ink);color:#e2e8f0;border-radius:12px;padding:1.8rem 2rem;margin:2rem 0;}
+.cheat-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:#81c784;margin-bottom:1rem;border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:0.5rem;}
+.cheat-row{display:grid;grid-template-columns:290px 1fr;gap:0.5rem 1rem;margin-bottom:0.6rem;font-size:0.85rem;align-items:start;}
+.cheat-code{font-family:'Fira Code',monospace;color:#fff59d;font-size:0.78rem;}
+.cheat-desc{color:#94a3b8;}
+.cheat-section{font-family:'Syne',sans-serif;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#81c784;margin:1rem 0 0.5rem;padding-top:0.8rem;border-top:1px solid rgba(255,255,255,0.08);}
+
+/* HOMEWORK */
+.homework{background:linear-gradient(135deg,#0a1f0a 0%,#0d2b3e 100%);color:#e2e8f0;border-radius:12px;padding:2rem 2.2rem;margin:2.5rem 0;}
+.hw-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:#81c784;margin-bottom:0.3rem;}
+.hw-subtitle{font-size:0.8rem;color:#888;font-family:'Fira Code',monospace;margin-bottom:1.2rem;}
+.hw-list{list-style:none;}
+.hw-list li{padding:0.5rem 0;border-bottom:1px solid rgba(255,255,255,0.07);font-size:0.9rem;display:flex;gap:0.6rem;align-items:flex-start;}
+.hw-list li::before{content:"▸";color:#81c784;flex-shrink:0;margin-top:0.1rem;}
+
+footer{background:var(--ink);color:#666;text-align:center;padding:2rem;font-family:'Fira Code',monospace;font-size:0.75rem;}
+footer span{color:#81c784;}
+code{font-family:'Fira Code',monospace;font-size:0.83em;background:#dcedc8;color:var(--orange);padding:0.1rem 0.4rem;border-radius:4px;}
+mark{background:var(--highlight);padding:0 0.2rem;border-radius:3px;}
+
+@media(max-width:700px){
+  .hero,.progress-section{padding-left:1.5rem;padding-right:1.5rem;}
+  main,.toc-wrap{padding-left:1.2rem;padding-right:1.2rem;}
+  .hero h1{font-size:2rem;}
+  .cheat-row,.feature-grid,.compare-grid{grid-template-columns:1fr;}
+  .df-header-row,.df-body-row{grid-template-columns:50px repeat(4,1fr);}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">🐍 <span>Python</span> Trainer</div>
+  <div class="nav-day">📅 Day 4 of 30 — Streamlit</div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">// Your Personal Python Trainer · Streamlit Series</div>
+  <h1>Day 4: <em>Data Display</em><br/>Tables, DataFrames & JSON</h1>
+  <p>Today we bring <strong>data to life</strong>. Learn to display tables, DataFrames, JSON, and raw data beautifully — and connect everything to Pandas, the most important data library for QA automation.</p>
+  <div class="hero-pills">
+    <span class="pill">🕐 ~65 min read</span>
+    <span class="pill">🟠 Intermediate+</span>
+    <span class="pill">💻 9 code examples</span>
+    <span class="pill">🐼 Pandas intro included</span>
+    <span class="pill">🏗️ Project + Quiz + HW</span>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-section">
+  <div class="progress-label">Your 30-Day Streamlit Journey</div>
+  <div class="progress-track">
+    <div class="prog-day done"></div><div class="prog-day done"></div>
+    <div class="prog-day done"></div><div class="prog-day current"></div>
+    <div class="prog-day"></div><div class="prog-day"></div><div class="prog-day"></div>
+    <div class="prog-day"></div><div class="prog-day"></div><div class="prog-day"></div>
+    <div class="prog-day"></div><div class="prog-day"></div><div class="prog-day"></div>
+    <div class="prog-day"></div><div class="prog-day"></div><div class="prog-day"></div>
+    <div class="prog-day"></div><div class="prog-day"></div><div class="prog-day"></div>
+    <div class="prog-day"></div><div class="prog-day"></div><div class="prog-day"></div>
+    <div class="prog-day"></div><div class="prog-day"></div><div class="prog-day"></div>
+    <div class="prog-day"></div><div class="prog-day"></div><div class="prog-day"></div>
+    <div class="prog-day"></div><div class="prog-day"></div>
+    <div class="prog-nums">4 / 30</div>
+  </div>
+</div>
+
+<!-- TOC -->
+<div class="toc-wrap">
+  <div class="toc-card">
+    <div class="toc-title">📚 Today's Lessons</div>
+    <ul class="toc-list">
+      <li><span class="toc-num">01</span><a href="#pandas">Pandas Crash Course — What You Need to Know</a></li>
+      <li><span class="toc-num">02</span><a href="#write">st.write() with Data — The Magic Wand</a></li>
+      <li><span class="toc-num">03</span><a href="#dataframe">st.dataframe() — Interactive Scrollable Table</a></li>
+      <li><span class="toc-num">04</span><a href="#table">st.table() — Static Fixed Table</a></li>
+      <li><span class="toc-num">05</span><a href="#styling">Styling DataFrames — Colour & Formatting</a></li>
+      <li><span class="toc-num">06</span><a href="#json">st.json() — Display JSON / Dicts Beautifully</a></li>
+      <li><span class="toc-num">07</span><a href="#csv">Reading CSV Files into Streamlit</a></li>
+      <li><span class="toc-num">08</span><a href="#filtering">Live Filtering with Widgets + DataFrames</a></li>
+      <li><span class="toc-num">09</span><a href="#download">st.download_button() — Export Data as CSV</a></li>
+      <li><span class="toc-num">10</span><a href="#project">🏗️ Mini Project — Interactive Test Results Viewer</a></li>
+      <li><span class="toc-num">11</span><a href="#cheat">Day 4 Cheat Sheet</a></li>
+      <li><span class="toc-num">12</span><a href="#quiz">Mini Quiz</a></li>
+      <li><span class="toc-num">13</span><a href="#hw">Homework</a></li>
+    </ul>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main>
+
+<!-- ═══ L01 ═══ -->
+<div class="lesson" id="pandas">
+  <div class="lesson-num">Lesson 01</div>
+  <h2>Pandas Crash Course — What You Need to Know 🐼</h2>
+
+  <p>To display data in Streamlit, you need to understand <strong>Pandas</strong> — Python's most popular data library. You don't need to be an expert. Just understand these two things: <strong>Series</strong> and <strong>DataFrame</strong>.</p>
+
+  <div class="analogy">
+    <div class="analogy-label">📊 Analogy — Excel Spreadsheet</div>
+    Think of <strong>Pandas DataFrame</strong> as a single Excel sheet — it has rows and columns with headers. Think of a <strong>Pandas Series</strong> as a single column from that sheet. That's it. If you know Excel, you already understand DataFrames!
+  </div>
+
+  <p>Here is everything about Pandas you need for Streamlit data display:</p>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">python — pandas_basics.py</span><div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div></div>
+    <pre><span class="kw">import</span> <span class="cls">pandas</span> <span class="kw">as</span> <span class="var">pd</span>   <span class="cm"># pd is the standard alias — always use this</span>
+
+<span class="cm"># ── Creating a DataFrame from a DICTIONARY ────────────────</span>
+<span class="cm"># Keys = column names, Values = list of rows for that column</span>
+<span class="var">df</span> <span class="op">=</span> <span class="cls">pd</span>.<span class="fn">DataFrame</span>({
+    <span class="str">"TC_ID"</span>:     [<span class="str">"TC-001"</span>, <span class="str">"TC-002"</span>, <span class="str">"TC-003"</span>, <span class="str">"TC-004"</span>],
+    <span class="str">"Test_Name"</span>: [<span class="str">"Login"</span>, <span class="str">"Logout"</span>, <span class="str">"Dashboard"</span>, <span class="str">"Export"</span>],
+    <span class="str">"Result"</span>:    [<span class="str">"Pass"</span>, <span class="str">"Pass"</span>, <span class="str">"Fail"</span>, <span class="str">"Pass"</span>],
+    <span class="str">"Duration"</span>:  [<span class="num">2.3</span>, <span class="num">1.1</span>, <span class="num">5.8</span>, <span class="num">3.2</span>],
+    <span class="str">"Tester"</span>:   [<span class="str">"Umakant"</span>, <span class="str">"Umakant"</span>, <span class="str">"Ravi"</span>, <span class="str">"Umakant"</span>]
+})
+
+<span class="cm"># ── Useful DataFrame operations ───────────────────────────</span>
+<span class="fn">print</span>(<span class="var">df</span>.<span class="fn">shape</span>)           <span class="cm"># (4, 5) → 4 rows, 5 columns</span>
+<span class="fn">print</span>(<span class="var">df</span>.<span class="fn">columns</span>.<span class="fn">tolist</span>()) <span class="cm"># ['TC_ID', 'Test_Name', 'Result', ...]</span>
+<span class="fn">print</span>(<span class="var">df</span>.<span class="fn">dtypes</span>)           <span class="cm"># Data type of each column</span>
+
+<span class="cm"># ── Selecting columns ─────────────────────────────────────</span>
+<span class="var">results_only</span> <span class="op">=</span> <span class="var">df</span>[<span class="str">"Result"</span>]              <span class="cm"># Single column → Series</span>
+<span class="var">id_and_result</span> <span class="op">=</span> <span class="var">df</span>[[<span class="str">"TC_ID"</span>, <span class="str">"Result"</span>]]  <span class="cm"># Multiple → DataFrame</span>
+
+<span class="cm"># ── Filtering rows ────────────────────────────────────────</span>
+<span class="var">failed_tests</span> <span class="op">=</span> <span class="var">df</span>[<span class="var">df</span>[<span class="str">"Result"</span>] <span class="op">==</span> <span class="str">"Fail"</span>]   <span class="cm"># Only failed rows</span>
+<span class="var">slow_tests</span>   <span class="op">=</span> <span class="var">df</span>[<span class="var">df</span>[<span class="str">"Duration"</span>] <span class="op">&gt;</span> <span class="num">3.0</span>]    <span class="cm"># Tests taking > 3 sec</span>
+
+<span class="cm"># ── Sorting ───────────────────────────────────────────────</span>
+<span class="var">sorted_df</span> <span class="op">=</span> <span class="var">df</span>.<span class="fn">sort_values</span>(<span class="str">"Duration"</span>, <span class="var">ascending</span><span class="op">=</span><span class="kw">False</span>)
+
+<span class="cm"># ── Value counts ──────────────────────────────────────────</span>
+<span class="var">result_counts</span> <span class="op">=</span> <span class="var">df</span>[<span class="str">"Result"</span>].<span class="fn">value_counts</span>()
+<span class="cm"># Pass    3</span>
+<span class="cm"># Fail    1</span>
+
+<span class="cm"># ── Adding a new column ───────────────────────────────────</span>
+<span class="var">df</span>[<span class="str">"Status"</span>] <span class="op">=</span> <span class="var">df</span>[<span class="str">"Result"</span>].<span class="fn">apply</span>(<span class="kw">lambda</span> <span class="var">x</span>: <span class="str">"✅"</span> <span class="kw">if</span> <span class="var">x</span><span class="op">==</span><span class="str">"Pass"</span> <span class="kw">else</span> <span class="str">"❌"</span>)
+
+<span class="cm"># ── Basic stats ───────────────────────────────────────────</span>
+<span class="fn">print</span>(<span class="var">df</span>[<span class="str">"Duration"</span>].<span class="fn">mean</span>())   <span class="cm"># Average duration</span>
+<span class="fn">print</span>(<span class="var">df</span>[<span class="str">"Duration"</span>].<span class="fn">max</span>())    <span class="cm"># Slowest test</span>
+<span class="fn">print</span>(<span class="var">df</span>[<span class="str">"Duration"</span>].<span class="fn">sum</span>())    <span class="cm"># Total execution time</span></pre>
+  </div>
+
+  <p>Here is a visual of what that DataFrame looks like as a table:</p>
+
+  <div class="df-visual">
+    <div class="df-header-row">
+      <div class="df-th idx">#</div>
+      <div class="df-th">TC_ID</div>
+      <div class="df-th">Test_Name</div>
+      <div class="df-th">Result</div>
+      <div class="df-th">Duration</div>
+    </div>
+    <div class="df-body-row">
+      <div class="df-td idx">0</div><div class="df-td">TC-001</div><div class="df-td">Login</div><div class="df-td pass">Pass</div><div class="df-td">2.3</div>
+    </div>
+    <div class="df-body-row">
+      <div class="df-td idx">1</div><div class="df-td">TC-002</div><div class="df-td">Logout</div><div class="df-td pass">Pass</div><div class="df-td">1.1</div>
+    </div>
+    <div class="df-body-row">
+      <div class="df-td idx">2</div><div class="df-td">TC-003</div><div class="df-td">Dashboard</div><div class="df-td fail">Fail</div><div class="df-td">5.8</div>
+    </div>
+    <div class="df-body-row">
+      <div class="df-td idx">3</div><div class="df-td">TC-004</div><div class="df-td">Export</div><div class="df-td pass">Pass</div><div class="df-td">3.2</div>
+    </div>
+  </div>
+
+  <div class="box tip">
+    <div class="box-label">💡 Install Pandas if needed</div>
+    If you get a <code>ModuleNotFoundError</code>, install it: <code>pip install pandas</code>. Pandas usually comes pre-installed with Streamlit, but just in case!
+  </div>
+</div>
+
+<!-- ═══ L02 ═══ -->
+<div class="lesson" id="write">
+  <div class="lesson-num">Lesson 02</div>
+  <h2>st.write() with Data — The Magic Wand 🪄</h2>
+
+  <p>Remember from Day 1 — <code>st.write()</code> is the Swiss Army knife. It automatically detects what you pass it and renders it beautifully. Pass a DataFrame, it shows a table. Pass a dict, it shows a neat JSON. Pass a list, it shows a list.</p>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">python — write_with_data.py</span><div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div></div>
+    <pre><span class="kw">import</span> <span class="cls">streamlit</span> <span class="kw">as</span> <span class="var">st</span>
+<span class="kw">import</span> <span class="cls">pandas</span> <span class="kw">as</span> <span class="var">pd</span>
+
+<span class="fn">st.title</span>(<span class="str">"st.write() with Different Data Types"</span>)
+
+<span class="cm"># ── Passing a DataFrame ───────────────────────────────────</span>
+<span class="var">df</span> <span class="op">=</span> <span class="cls">pd</span>.<span class="fn">DataFrame</span>({
+    <span class="str">"Name"</span>:   [<span class="str">"Umakant"</span>, <span class="str">"Ravi"</span>, <span class="str">"Priya"</span>],
+    <span class="str">"Role"</span>:   [<span class="str">"QA Lead"</span>, <span class="str">"Dev"</span>, <span class="str">"BA"</span>],
+    <span class="str">"Score"</span>:  [<span class="num">95</span>, <span class="num">88</span>, <span class="num">91</span>]
+})
+
+<span class="fn">st.subheader</span>(<span class="str">"DataFrame → shows as interactive table"</span>)
+<span class="fn">st.write</span>(<span class="var">df</span>)   <span class="cm"># Automatic — renders as a nice sortable table</span>
+
+<span class="fn">st.divider</span>()
+
+<span class="cm"># ── Passing a dictionary ──────────────────────────────────</span>
+<span class="fn">st.subheader</span>(<span class="str">"Dict → shows as JSON-style"</span>)
+<span class="fn">st.write</span>({<span class="str">"project"</span>: <span class="str">"ICAPS"</span>, <span class="str">"sprint"</span>: <span class="num">42</span>, <span class="str">"pass_rate"</span>: <span class="str">"90%"</span>})
+
+<span class="fn">st.divider</span>()
+
+<span class="cm"># ── Passing a list ────────────────────────────────────────</span>
+<span class="fn">st.subheader</span>(<span class="str">"List → shows as a list"</span>)
+<span class="fn">st.write</span>([<span class="str">"Selenium"</span>, <span class="str">"Postman"</span>, <span class="str">"Jira"</span>, <span class="str">"SQL"</span>])
+
+<span class="fn">st.divider</span>()
+
+<span class="cm"># ── Mixing text AND data in one call ──────────────────────</span>
+<span class="fn">st.write</span>(<span class="str">"The DataFrame has"</span>, <span class="var">df</span>.<span class="fn">shape</span>[<span class="num">0</span>], <span class="str">"rows and"</span>, <span class="var">df</span>.<span class="fn">shape</span>[<span class="num">1</span>], <span class="str">"columns."</span>)</pre>
+  </div>
+
+  <div class="box note">
+    <div class="box-label">📘 st.write() auto-detects type</div>
+    <code>str</code> → text &nbsp;|&nbsp; <code>int/float</code> → number &nbsp;|&nbsp; <code>DataFrame</code> → interactive table &nbsp;|&nbsp; <code>dict</code> → JSON view &nbsp;|&nbsp; <code>list</code> → list &nbsp;|&nbsp; <code>Matplotlib/Plotly figure</code> → chart. One function, handles everything!
+  </div>
+</div>
+
+<!-- ═══ L03 ═══ -->
+<div class="lesson" id="dataframe">
+  <div class="lesson-num">Lesson 03</div>
+  <h2>st.dataframe() — Interactive Scrollable Table 📋</h2>
+
+  <p><code>st.dataframe()</code> is the dedicated function for showing DataFrames. It is more powerful than <code>st.write(df)</code> because it gives you <strong>more control</strong> over how the table looks and behaves — width, height, column configuration, and even built-in highlighting.</p>
+
+  <div class="compare-grid">
+    <div class="compare-card blue">
+      <h4>🔵 st.write(df)</h4>
+      <ul>
+        <li>Quick and simple</li>
+        <li>Less control over appearance</li>
+        <li>No column config options</li>
+        <li>Good for quick debug display</li>
+      </ul>
+    </div>
+    <div class="compare-card green">
+      <h4>🟢 st.dataframe(df)</h4>
+      <ul>
+        <li>Full control over display</li>
+        <li>Set width, height, column types</li>
+        <li>Built-in progress bars in cells</li>
+        <li>Best for production apps ✅</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">python — dataframe_demo.py</span><div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div></div>
+    <pre><span class="kw">import</span> <span class="cls">streamlit</span> <span class="kw">as</span> <span class="var">st</span>
+<span class="kw">import</span> <span class="cls">pandas</span> <span class="kw">as</span> <span class="var">pd</span>
+
+<span class="fn">st.title</span>(<span class="str">"st.dataframe() Demo"</span>)
+
+<span class="var">df</span> <span class="op">=</span> <span class="cls">pd</span>.<span class="fn">DataFrame</span>({
+    <span class="str">"TC_ID"</span>:    [<span class="str">"TC-001"</span>,<span class="str">"TC-002"</span>,<span class="str">"TC-003"</span>,<span class="str">"TC-004"</span>,<span class="str">"TC-005"</span>],
+    <span class="str">"Name"</span>:     [<span class="str">"Login"</span>,<span class="str">"Logout"</span>,<span class="str">"Dashboard"</span>,<span class="str">"Export"</span>,<span class="str">"API Check"</span>],
+    <span class="str">"Result"</span>:   [<span class="str">"Pass"</span>,<span class="str">"Pass"</span>,<span class="str">"Fail"</span>,<span class="str">"Pass"</span>,<span class="str">"Blocked"</span>],
+    <span class="str">"Duration"</span>: [<span class="num">2.3</span>, <span class="num">1.1</span>, <span class="num">5.8</span>, <span class="num">3.2</span>, <span class="num">0.0</span>],
+    <span class="str">"Priority"</span>: [<span class="str">"High"</span>,<span class="str">"Low"</span>,<span class="str">"High"</span>,<span class="str">"Medium"</span>,<span class="str">"High"</span>]
+})
+
+<span class="cm"># ── Basic usage ───────────────────────────────────────────</span>
+<span class="fn">st.dataframe</span>(<span class="var">df</span>)   <span class="cm"># Sortable, scrollable, interactive!</span>
+
+<span class="fn">st.divider</span>()
+
+<span class="cm"># ── Control size ─────────────────────────────────────────</span>
+<span class="fn">st.subheader</span>(<span class="str">"Fixed height scrollable table"</span>)
+<span class="fn">st.dataframe</span>(<span class="var">df</span>, <span class="var">height</span><span class="op">=</span><span class="num">200</span>, <span class="var">use_container_width</span><span class="op">=</span><span class="kw">True</span>)
+<span class="cm"># use_container_width=True → stretches table to full column width</span>
+
+<span class="fn">st.divider</span>()
+
+<span class="cm"># ── Column Configuration — the POWERFUL feature ──────────</span>
+<span class="fn">st.subheader</span>(<span class="str">"Column-configured table"</span>)
+<span class="fn">st.dataframe</span>(
+    <span class="var">df</span>,
+    <span class="var">use_container_width</span><span class="op">=</span><span class="kw">True</span>,
+    <span class="var">column_config</span><span class="op">=</span>{
+        <span class="cm"># Rename column label (display name)</span>
+        <span class="str">"TC_ID"</span>: <span class="fn">st.column_config.TextColumn</span>(<span class="str">"Test Case ID"</span>),
+
+        <span class="cm"># Make duration show as a progress bar!</span>
+        <span class="cm"># max_value sets the 100% mark</span>
+        <span class="str">"Duration"</span>: <span class="fn">st.column_config.ProgressColumn</span>(
+            <span class="str">"Duration (s)"</span>,
+            <span class="var">min_value</span><span class="op">=</span><span class="num">0</span>,
+            <span class="var">max_value</span><span class="op">=</span><span class="num">10</span>,
+            <span class="var">format</span><span class="op">=</span><span class="str">"%.1f s"</span>
+        ),
+
+        <span class="cm"># Show Result as a badge (coloured tag)</span>
+        <span class="str">"Result"</span>: <span class="fn">st.column_config.SelectboxColumn</span>(
+            <span class="str">"Result"</span>,
+            <span class="var">options</span><span class="op">=</span>[<span class="str">"Pass"</span>, <span class="str">"Fail"</span>, <span class="str">"Blocked"</span>]
+        ),
+    },
+    <span class="cm"># Hide the default index column (0,1,2,3...)</span>
+    <span class="var">hide_index</span><span class="op">=</span><span class="kw">True</span>
+)</pre>
+  </div>
+
+  <table>
+    <thead><tr><th>Column Config Type</th><th>What it renders</th><th>Best for</th></tr></thead>
+    <tbody>
+      <tr><td><code>TextColumn</code></td><td>Plain text with custom label</td><td>Names, IDs, descriptions</td></tr>
+      <tr><td><code>NumberColumn</code></td><td>Number with formatting</td><td>Scores, counts, amounts</td></tr>
+      <tr><td><code>ProgressColumn</code></td><td>Filled progress bar inside cell</td><td>Duration, completion %, score</td></tr>
+      <tr><td><code>CheckboxColumn</code></td><td>A tick/checkbox inside the cell</td><td>Boolean true/false columns</td></tr>
+      <tr><td><code>SelectboxColumn</code></td><td>Dropdown inside the cell (editable)</td><td>Status, priority, category</td></tr>
+      <tr><td><code>LinkColumn</code></td><td>Clickable hyperlink</td><td>Bug tracker URLs, Jira links</td></tr>
+      <tr><td><code>DateColumn</code></td><td>Formatted date display</td><td>Date columns</td></tr>
+      <tr><td><code>ImageColumn</code></td><td>Renders images from URLs</td><td>Profile photos, screenshots</td></tr>
+    </tbody>
+  </table>
+
+  <div class="box tip">
+    <div class="box-label">💡 use_container_width=True</div>
+    Always add <code>use_container_width=True</code> to your dataframes. Without it, the table uses a fixed default width. With it, the table stretches to fill its container — whether that's a full-width page or a column. Your tables will always look clean and professional!
+  </div>
+</div>
+
+<!-- ═══ L04 ═══ -->
+<div class="lesson" id="table">
+  <div class="lesson-num">Lesson 04</div>
+  <h2>st.table() — Static Fixed Table 📌</h2>
+
+  <p><code>st.table()</code> shows a <strong>static</strong> table — no sorting, no scrolling, no interaction. It shows the entire DataFrame as a simple HTML-style table. Use it when you want a clean printable-style table that shows all rows at once.</p>
+
+  <div class="compare-grid">
+    <div class="compare-card blue">
+      <h4>📋 st.dataframe()</h4>
+      <ul>
+        <li>Interactive — click columns to sort</li>
+        <li>Scrollable for large data</li>
+        <li>Fixed height option</li>
+        <li>More customizable</li>
+        <li>Best for large datasets</li>
+      </ul>
+    </div>
+    <div class="compare-card green">
+      <h4>📌 st.table()</h4>
+      <ul>
+        <li>Static — no interaction</li>
+        <li>Shows ALL rows, no scroll</li>
+        <li>Good for small, final reports</li>
+        <li>Cleaner for printing / export</li>
+        <li>Best for small summary tables</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">python — table_demo.py</span><div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div></div>
+    <pre><span class="kw">import</span> <span class="cls">streamlit</span> <span class="kw">as</span> <span class="var">st</span>
+<span class="kw">import</span> <span class="cls">pandas</span> <span class="kw">as</span> <span class="var">pd</span>
+
+<span class="fn">st.title</span>(<span class="str">"st.table() Demo"</span>)
+
+<span class="cm"># Great for short summary tables — like a sprint summary</span>
+<span class="var">summary</span> <span class="op">=</span> <span class="cls">pd</span>.<span class="fn">DataFrame</span>({
+    <span class="str">"Metric"</span>:        [<span class="str">"Total Tests"</span>, <span class="str">"Passed"</span>, <span class="str">"Failed"</span>, <span class="str">"Blocked"</span>, <span class="str">"Pass Rate"</span>],
+    <span class="str">"This Sprint"</span>:   [<span class="num">52</span>, <span class="num">47</span>, <span class="num">3</span>, <span class="num">2</span>, <span class="str">"90.4%"</span>],
+    <span class="str">"Last Sprint"</span>:   [<span class="num">44</span>, <span class="num">38</span>, <span class="num">5</span>, <span class="num">1</span>, <span class="str">"86.4%"</span>],
+    <span class="str">"Change"</span>:        [<span class="str">"↑+8"</span>, <span class="str">"↑+9"</span>, <span class="str">"↓-2"</span>, <span class="str">"↑+1"</span>, <span class="str">"↑+4%"</span>]
+})
+
+<span class="fn">st.subheader</span>(<span class="str">"Sprint Comparison Summary"</span>)
+<span class="fn">st.table</span>(<span class="var">summary</span>)   <span class="cm"># Clean, static — all rows visible</span>
+
+<span class="fn">st.divider</span>()
+
+<span class="cm"># st.table also works with plain Python dicts!</span>
+<span class="fn">st.subheader</span>(<span class="str">"Environment Info"</span>)
+<span class="fn">st.table</span>({
+    <span class="str">"Environment"</span>:  [<span class="str">"DEV"</span>, <span class="str">"QA"</span>, <span class="str">"STAGING"</span>],
+    <span class="str">"Status"</span>:       [<span class="str">"Up"</span>, <span class="str">"Up"</span>, <span class="str">"Down"</span>],
+    <span class="str">"Last Deploy"</span>:  [<span class="str">"Today"</span>, <span class="str">"Yesterday"</span>, <span class="str">"3 days ago"</span>]
+})</pre>
+  </div>
+</div>
+
+<!-- ═══ L05 ═══ -->
+<div class="lesson" id="styling">
+  <div class="lesson-num">Lesson 05</div>
+  <h2>Styling DataFrames — Colour & Formatting 🎨</h2>
+
+  <p>Pandas has a built-in styling system called <strong>Styler</strong>. You can highlight cells based on values — green for Pass, red for Fail — and Streamlit renders these styles automatically when you pass a styled DataFrame to <code>st.dataframe()</code>.</p>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">python — styling_demo.py</span><div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div></div>
+    <pre><span class="kw">import</span> <span class="cls">streamlit</span> <span class="kw">as</span> <span class="var">st</span>
+<span class="kw">import</span> <span class="cls">pandas</span> <span class="kw">as</span> <span class="var">pd</span>
+
+<span class="fn">st.title</span>(<span class="str">"Styled DataFrame Demo"</span>)
+
+<span class="var">df</span> <span class="op">=</span> <span class="cls">pd</span>.<span class="fn">DataFrame</span>({
+    <span class="str">"TC_ID"</span>:    [<span class="str">"TC-001"</span>,<span class="str">"TC-002"</span>,<span class="str">"TC-003"</span>,<span class="str">"TC-004"</span>],
+    <span class="str">"Result"</span>:   [<span class="str">"Pass"</span>,<span class="str">"Fail"</span>,<span class="str">"Pass"</span>,<span class="str">"Blocked"</span>],
+    <span class="str">"Duration"</span>: [<span class="num">2.3</span>, <span class="num">7.5</span>, <span class="num">1.1</span>, <span class="num">0.0</span>],
+    <span class="str">"Score"</span>:    [<span class="num">95</span>, <span class="num">30</span>, <span class="num">88</span>, <span class="num">0</span>]
+})
+
+<span class="cm"># ── Method 1: Colour cells based on value ─────────────────</span>
+<span class="kw">def</span> <span class="fn">colour_result</span>(<span class="var">val</span>):
+    <span class="cm"># This function takes one cell value and returns CSS colour</span>
+    <span class="kw">if</span> <span class="var">val</span> <span class="op">==</span> <span class="str">"Pass"</span>:
+        <span class="kw">return</span> <span class="str">"background-color: #c8e6c9; color: #1b5e20"</span>  <span class="cm"># green</span>
+    <span class="kw">elif</span> <span class="var">val</span> <span class="op">==</span> <span class="str">"Fail"</span>:
+        <span class="kw">return</span> <span class="str">"background-color: #ffcdd2; color: #b71c1c"</span>  <span class="cm"># red</span>
+    <span class="kw">elif</span> <span class="var">val</span> <span class="op">==</span> <span class="str">"Blocked"</span>:
+        <span class="kw">return</span> <span class="str">"background-color: #fff9c4; color: #f57f17"</span>  <span class="cm"># yellow</span>
+    <span class="kw">return</span> <span class="str">""</span>   <span class="cm"># No style for other values</span>
+
+<span class="cm"># .style.map() applies the function to each cell in the column</span>
+<span class="var">styled_df</span> <span class="op">=</span> <span class="var">df</span>.<span class="fn">style</span>.<span class="fn">map</span>(<span class="fn">colour_result</span>, <span class="var">subset</span><span class="op">=</span>[<span class="str">"Result"</span>])
+
+<span class="fn">st.subheader</span>(<span class="str">"Colour-coded Results"</span>)
+<span class="fn">st.dataframe</span>(<span class="var">styled_df</span>, <span class="var">use_container_width</span><span class="op">=</span><span class="kw">True</span>, <span class="var">hide_index</span><span class="op">=</span><span class="kw">True</span>)
+
+<span class="fn">st.divider</span>()
+
+<span class="cm"># ── Method 2: Background gradient on numeric column ───────</span>
+<span class="var">gradient_df</span> <span class="op">=</span> <span class="var">df</span>.<span class="fn">style</span>.<span class="fn">background_gradient</span>(
+    <span class="var">subset</span><span class="op">=</span>[<span class="str">"Score"</span>],    <span class="cm"># Apply only to Score column</span>
+    <span class="var">cmap</span><span class="op">=</span><span class="str">"RdYlGn"</span>        <span class="cm"># Red → Yellow → Green colour map</span>
+)
+
+<span class="fn">st.subheader</span>(<span class="str">"Score with gradient colouring"</span>)
+<span class="fn">st.dataframe</span>(<span class="var">gradient_df</span>, <span class="var">use_container_width</span><span class="op">=</span><span class="kw">True</span>, <span class="var">hide_index</span><span class="op">=</span><span class="kw">True</span>)
+
+<span class="fn">st.divider</span>()
+
+<span class="cm"># ── Method 3: Highlight max/min values ────────────────────</span>
+<span class="var">highlight_df</span> <span class="op">=</span> <span class="var">df</span>.<span class="fn">style</span>.\
+    <span class="fn">highlight_max</span>(<span class="var">subset</span><span class="op">=</span>[<span class="str">"Duration"</span>], <span class="var">color</span><span class="op">=</span><span class="str">"#ffcdd2"</span>).\
+    <span class="fn">highlight_min</span>(<span class="var">subset</span><span class="op">=</span>[<span class="str">"Duration"</span>], <span class="var">color</span><span class="op">=</span><span class="str">"#c8e6c9"</span>)
+
+<span class="fn">st.subheader</span>(<span class="str">"Slowest (red) and Fastest (green) tests"</span>)
+<span class="fn">st.dataframe</span>(<span class="var">highlight_df</span>, <span class="var">use_container_width</span><span class="op">=</span><span class="kw">True</span>, <span class="var">hide_index</span><span class="op">=</span><span class="kw">True</span>)</pre>
+  </div>
+
+  <div class="box note">
+    <div class="box-label">📘 Styling chaining with dots</div>
+    You can chain multiple style methods: <code>df.style.map(...).background_gradient(...).highlight_max(...)</code>. Each <code>.</code> adds another style layer on top of the previous one. Very clean and readable!
+  </div>
+</div>
+
+<!-- ═══ L06 ═══ -->
+<div class="lesson" id="json">
+  <div class="lesson-num">Lesson 06</div>
+  <h2>st.json() — Display JSON & Dicts Beautifully 📦</h2>
+
+  <p>When you have a Python dictionary, a JSON response from an API, or nested data — <code>st.json()</code> displays it as a collapsible, colour-coded, interactive tree. Perfect for QA engineers who debug API responses!</p>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">python — json_demo.py</span><div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div></div>
+    <pre><span class="kw">import</span> <span class="cls">streamlit</span> <span class="kw">as</span> <span class="var">st</span>
+
+<span class="fn">st.title</span>(<span class="str">"st.json() Demo"</span>)
+
+<span class="cm"># ── Simple dict ───────────────────────────────────────────</span>
+<span class="fn">st.subheader</span>(<span class="str">"Test Run Metadata"</span>)
+<span class="fn">st.json</span>({
+    <span class="str">"run_id"</span>: <span class="str">"RUN-2024-001"</span>,
+    <span class="str">"project"</span>: <span class="str">"ICAPS"</span>,
+    <span class="str">"environment"</span>: <span class="str">"QA"</span>,
+    <span class="str">"total_tests"</span>: <span class="num">52</span>,
+    <span class="str">"passed"</span>: <span class="num">47</span>,
+    <span class="str">"failed"</span>: <span class="num">3</span>
+})
+
+<span class="fn">st.divider</span>()
+
+<span class="cm"># ── Nested dict — like an API response ────────────────────</span>
+<span class="fn">st.subheader</span>(<span class="str">"API Response (Postman-style view)"</span>)
+<span class="var">api_response</span> <span class="op">=</span> {
+    <span class="str">"status"</span>: <span class="num">200</span>,
+    <span class="str">"message"</span>: <span class="str">"Success"</span>,
+    <span class="str">"data"</span>: {
+        <span class="str">"user_id"</span>: <span class="num">1001</span>,
+        <span class="str">"name"</span>: <span class="str">"Umakant Pandey"</span>,
+        <span class="str">"roles"</span>: [<span class="str">"QA_LEAD"</span>, <span class="str">"REVIEWER"</span>],
+        <span class="str">"permissions"</span>: {
+            <span class="str">"read"</span>: <span class="kw">True</span>,
+            <span class="str">"write"</span>: <span class="kw">True</span>,
+            <span class="str">"delete"</span>: <span class="kw">False</span>
+        }
+    }
+}
+<span class="fn">st.json</span>(<span class="var">api_response</span>)
+
+<span class="fn">st.divider</span>()
+
+<span class="cm"># ── expanded=False → starts collapsed ─────────────────────</span>
+<span class="fn">st.subheader</span>(<span class="str">"Collapsed by default"</span>)
+<span class="fn">st.json</span>(<span class="var">api_response</span>, <span class="var">expanded</span><span class="op">=</span><span class="kw">False</span>)   <span class="cm"># User clicks to expand</span></pre>
+  </div>
+
+  <div class="box tip">
+    <div class="box-label">💡 QA Engineer tip — API Testing</div>
+    You use Postman for API testing — it shows responses in a collapsible JSON tree. <code>st.json()</code> gives you the exact same view inside your Streamlit app! You can build a mini Postman-like tool right in Streamlit. Very useful for your work!
+  </div>
+</div>
+
+<!-- ═══ L07 ═══ -->
+<div class="lesson" id="csv">
+  <div class="lesson-num">Lesson 07</div>
+  <h2>Reading CSV Files into Streamlit 📂</h2>
+
+  <p>In real projects, your data lives in <strong>CSV files</strong> (Excel exports, test result exports, Jira exports). Here's how to read them into Streamlit — two ways: from a <strong>fixed file path</strong>, and from a <strong>file uploader widget</strong>.</p>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">python — csv_reading.py</span><div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div></div>
+    <pre><span class="kw">import</span> <span class="cls">streamlit</span> <span class="kw">as</span> <span class="var">st</span>
+<span class="kw">import</span> <span class="cls">pandas</span> <span class="kw">as</span> <span class="var">pd</span>
+
+<span class="fn">st.title</span>(<span class="str">"Reading CSV Files"</span>)
+
+<span class="cm"># ── METHOD 1: Read from a fixed file ──────────────────────</span>
+<span class="cm"># Use this when the CSV is always at the same location</span>
+<span class="cm"># Great for static dashboards where data is updated externally</span>
+
+<span class="cm"># df = pd.read_csv("test_results.csv")   ← file in same folder</span>
+<span class="cm"># df = pd.read_csv("C:/data/results.csv") ← full path</span>
+
+<span class="fn">st.divider</span>()
+
+<span class="cm"># ── METHOD 2: File uploader — user uploads their CSV ──────</span>
+<span class="cm"># This is the interactive way — user drags and drops a file</span>
+<span class="var">uploaded_file</span> <span class="op">=</span> <span class="fn">st.file_uploader</span>(
+    <span class="str">"Upload your test results CSV:"</span>,
+    <span class="var">type</span><span class="op">=</span>[<span class="str">"csv"</span>]   <span class="cm"># Only allow .csv files</span>
+)
+
+<span class="kw">if</span> <span class="var">uploaded_file</span> <span class="kw">is not None</span>:
+    <span class="cm"># uploaded_file is a file-like object</span>
+    <span class="cm"># pd.read_csv() reads it just like a regular file!</span>
+    <span class="var">df</span> <span class="op">=</span> <span class="cls">pd</span>.<span class="fn">read_csv</span>(<span class="var">uploaded_file</span>)
+
+    <span class="fn">st.success</span>(<span class="str">f"✅ Loaded {len(df)} rows and {len(df.columns)} columns!"</span>)
+
+    <span class="cm"># Show basic info</span>
+    <span class="var">col1</span>, <span class="var">col2</span>, <span class="var">col3</span> <span class="op">=</span> <span class="fn">st.columns</span>(<span class="num">3</span>)
+    <span class="kw">with</span> <span class="var">col1</span>: <span class="fn">st.metric</span>(<span class="str">"Rows"</span>, <span class="fn">len</span>(<span class="var">df</span>))
+    <span class="kw">with</span> <span class="var">col2</span>: <span class="fn">st.metric</span>(<span class="str">"Columns"</span>, <span class="fn">len</span>(<span class="var">df</span>.<span class="fn">columns</span>))
+    <span class="kw">with</span> <span class="var">col3</span>: <span class="fn">st.metric</span>(<span class="str">"Missing Values"</span>, <span class="fn">int</span>(<span class="var">df</span>.<span class="fn">isnull</span>().<span class="fn">sum</span>().<span class="fn">sum</span>()))
+
+    <span class="fn">st.divider</span>()
+
+    <span class="cm"># Show column names and data types</span>
+    <span class="kw">with</span> <span class="fn">st.expander</span>(<span class="str">"📋 Column Info"</span>):
+        <span class="fn">st.write</span>(<span class="var">df</span>.<span class="fn">dtypes</span>.<span class="fn">reset_index</span>())
+
+    <span class="cm"># Preview first 5 rows</span>
+    <span class="fn">st.subheader</span>(<span class="str">"Preview (first 5 rows)"</span>)
+    <span class="fn">st.dataframe</span>(<span class="var">df</span>.<span class="fn">head</span>(<span class="num">5</span>), <span class="var">use_container_width</span><span class="op">=</span><span class="kw">True</span>)
+
+    <span class="cm"># Full data</span>
+    <span class="fn">st.subheader</span>(<span class="str">"Full Data"</span>)
+    <span class="fn">st.dataframe</span>(<span class="var">df</span>, <span class="var">use_container_width</span><span class="op">=</span><span class="kw">True</span>, <span class="var">height</span><span class="op">=</span><span class="num">300</span>)
+
+<span class="kw">else</span>:
+    <span class="fn">st.info</span>(<span class="str">"👆 Please upload a CSV file to get started."</span>)</pre>
+  </div>
+
+  <div class="box note">
+    <div class="box-label">📘 st.file_uploader() returns None when no file</div>
+    Always check <code>if uploaded_file is not None:</code> before using the file. When no file is uploaded, it returns <code>None</code>. If you try to read <code>None</code> with Pandas, you'll get an error!
+  </div>
+
+  <div class="box tip">
+    <div class="box-label">💡 Also supports Excel files!</div>
+    <code>st.file_uploader("Upload Excel:", type=["xlsx"])</code> then <code>pd.read_excel(uploaded_file)</code>. Works the exact same way. You can also accept multiple types: <code>type=["csv", "xlsx"]</code>
+  </div>
+</div>
+
+<!-- ═══ L08 ═══ -->
+<div class="lesson" id="filtering">
+  <div class="lesson-num">Lesson 08</div>
+  <h2>Live Filtering with Widgets + DataFrames 🔍</h2>
+
+  <p>This is where everything clicks together beautifully. Put filter widgets in the sidebar (Day 3), capture their values, filter the Pandas DataFrame (Lesson 01), and display the result with <code>st.dataframe()</code>. Every time a user changes a filter, Streamlit reruns — and the table updates automatically!</p>
+
+  <div class="analogy">
+    <div class="analogy-label">🔎 Analogy — Excel AutoFilter</div>
+    You know how in Excel you click the column dropdown and filter rows by value? That's what we're building here — but interactive, live, and in a web app. The <strong>widgets are the filter dropdowns</strong>, and the <strong>DataFrame is the spreadsheet</strong>. Change the filter → table updates instantly!
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">python — live_filter_demo.py — the most practical example today!</span><div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div></div>
+    <pre><span class="kw">import</span> <span class="cls">streamlit</span> <span class="kw">as</span> <span class="var">st</span>
+<span class="kw">import</span> <span class="cls">pandas</span> <span class="kw">as</span> <span class="var">pd</span>
+
+<span class="fn">st.set_page_config</span>(<span class="var">layout</span><span class="op">=</span><span class="str">"wide"</span>)
+<span class="fn">st.title</span>(<span class="str">"🔍 Live Test Results Filter"</span>)
+
+<span class="cm"># ── Sample data (in real life, read from CSV or DB) ───────</span>
+<span class="var">df</span> <span class="op">=</span> <span class="cls">pd</span>.<span class="fn">DataFrame</span>({
+    <span class="str">"TC_ID"</span>:    [<span class="str">"TC-001"</span>,<span class="str">"TC-002"</span>,<span class="str">"TC-003"</span>,<span class="str">"TC-004"</span>,<span class="str">"TC-005"</span>,<span class="str">"TC-006"</span>],
+    <span class="str">"Module"</span>:   [<span class="str">"Login"</span>,<span class="str">"Login"</span>,<span class="str">"Dashboard"</span>,<span class="str">"API"</span>,<span class="str">"API"</span>,<span class="str">"Reports"</span>],
+    <span class="str">"Result"</span>:   [<span class="str">"Pass"</span>,<span class="str">"Pass"</span>,<span class="str">"Fail"</span>,<span class="str">"Pass"</span>,<span class="str">"Blocked"</span>,<span class="str">"Fail"</span>],
+    <span class="str">"Priority"</span>: [<span class="str">"High"</span>,<span class="str">"High"</span>,<span class="str">"High"</span>,<span class="str">"Medium"</span>,<span class="str">"Medium"</span>,<span class="str">"Low"</span>],
+    <span class="str">"Duration"</span>: [<span class="num">2.3</span>,<span class="num">1.8</span>,<span class="num">5.8</span>,<span class="num">0.9</span>,<span class="num">0.0</span>,<span class="num">4.2</span>],
+    <span class="str">"Tester"</span>:   [<span class="str">"Umakant"</span>,<span class="str">"Ravi"</span>,<span class="str">"Umakant"</span>,<span class="str">"Priya"</span>,<span class="str">"Ravi"</span>,<span class="str">"Umakant"</span>]
+})
+
+<span class="cm"># ── SIDEBAR FILTERS ───────────────────────────────────────</span>
+<span class="kw">with</span> <span class="var">st.sidebar</span>:
+    <span class="fn">st.header</span>(<span class="str">"🎛️ Filters"</span>)
+
+    <span class="cm"># Filter 1: Result (multiselect — pick multiple)</span>
+    <span class="cm"># Default = all results selected</span>
+    <span class="var">all_results</span> <span class="op">=</span> <span class="var">df</span>[<span class="str">"Result"</span>].<span class="fn">unique</span>().<span class="fn">tolist</span>()
+    <span class="var">result_filter</span> <span class="op">=</span> <span class="fn">st.multiselect</span>(
+        <span class="str">"Result:"</span>, <span class="var">all_results</span>, <span class="var">default</span><span class="op">=</span><span class="var">all_results</span>
+    )
+
+    <span class="cm"># Filter 2: Module</span>
+    <span class="var">all_modules</span> <span class="op">=</span> <span class="var">df</span>[<span class="str">"Module"</span>].<span class="fn">unique</span>().<span class="fn">tolist</span>()
+    <span class="var">module_filter</span> <span class="op">=</span> <span class="fn">st.multiselect</span>(
+        <span class="str">"Module:"</span>, <span class="var">all_modules</span>, <span class="var">default</span><span class="op">=</span><span class="var">all_modules</span>
+    )
+
+    <span class="cm"># Filter 3: Duration slider</span>
+    <span class="var">max_dur</span> <span class="op">=</span> <span class="fn">float</span>(<span class="var">df</span>[<span class="str">"Duration"</span>].<span class="fn">max</span>())
+    <span class="var">dur_range</span> <span class="op">=</span> <span class="fn">st.slider</span>(
+        <span class="str">"Max Duration (s):"</span>, <span class="num">0.0</span>, <span class="var">max_dur</span>, <span class="var">max_dur</span>
+    )
+
+<span class="cm"># ── APPLY FILTERS ─────────────────────────────────────────</span>
+<span class="cm"># Each filter narrows down the DataFrame step by step</span>
+<span class="var">filtered</span> <span class="op">=</span> <span class="var">df</span>[
+    (<span class="var">df</span>[<span class="str">"Result"</span>].<span class="fn">isin</span>(<span class="var">result_filter</span>)) <span class="op">&amp;</span>   <span class="cm"># isin() checks list membership</span>
+    (<span class="var">df</span>[<span class="str">"Module"</span>].<span class="fn">isin</span>(<span class="var">module_filter</span>)) <span class="op">&amp;</span>
+    (<span class="var">df</span>[<span class="str">"Duration"</span>] <span class="op">&lt;=</span> <span class="var">dur_range</span>)
+]
+
+<span class="cm"># ── SHOW RESULTS ──────────────────────────────────────────</span>
+<span class="fn">st.write</span>(<span class="str">f"Showing **{len(filtered)}** of **{len(df)}** tests"</span>)
+
+<span class="kw">if</span> <span class="fn">len</span>(<span class="var">filtered</span>) <span class="op">==</span> <span class="num">0</span>:
+    <span class="fn">st.warning</span>(<span class="str">"No tests match your filters. Adjust the sidebar."</span>)
+<span class="kw">else</span>:
+    <span class="fn">st.dataframe</span>(<span class="var">filtered</span>, <span class="var">use_container_width</span><span class="op">=</span><span class="kw">True</span>, <span class="var">hide_index</span><span class="op">=</span><span class="kw">True</span>)</pre>
+  </div>
+
+  <div class="box tip">
+    <div class="box-label">💡 df["Column"].unique().tolist()</div>
+    This one-liner gets all unique values in a column as a Python list. Use it to automatically populate filter options from your data — so your app never needs manual updates when new values appear in the data!
+  </div>
+
+  <div class="box note">
+    <div class="box-label">📘 The & operator for multiple filters</div>
+    In Pandas, you combine multiple filter conditions with <code>&amp;</code> (AND) or <code>|</code> (OR), not Python's <code>and</code>/<code>or</code>. Each condition must be wrapped in parentheses: <code>(condition1) &amp; (condition2)</code>. This is one of the most common Pandas patterns you'll use!
+  </div>
+</div>
+
+<!-- ═══ L09 ═══ -->
+<div class="lesson" id="download">
+  <div class="lesson-num">Lesson 09</div>
+  <h2>st.download_button() — Export Data as CSV ⬇️</h2>
+
+  <p>After the user filters/analyses data, they usually want to export it. <code>st.download_button()</code> lets them download any data (DataFrame as CSV, text, JSON, etc.) with one click — directly to their computer.</p>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">python — download_demo.py</span><div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div></div>
+    <pre><span class="kw">import</span> <span class="cls">streamlit</span> <span class="kw">as</span> <span class="var">st</span>
+<span class="kw">import</span> <span class="cls">pandas</span> <span class="kw">as</span> <span class="var">pd</span>
+
+<span class="fn">st.title</span>(<span class="str">"Download Button Demo"</span>)
+
+<span class="var">df</span> <span class="op">=</span> <span class="cls">pd</span>.<span class="fn">DataFrame</span>({
+    <span class="str">"TC_ID"</span>:  [<span class="str">"TC-001"</span>,<span class="str">"TC-002"</span>,<span class="str">"TC-003"</span>],
+    <span class="str">"Result"</span>: [<span class="str">"Pass"</span>,<span class="str">"Fail"</span>,<span class="str">"Pass"</span>],
+    <span class="str">"Duration"</span>: [<span class="num">2.3</span>, <span class="num">5.8</span>, <span class="num">1.1</span>]
+})
+
+<span class="fn">st.dataframe</span>(<span class="var">df</span>, <span class="var">use_container_width</span><span class="op">=</span><span class="kw">True</span>)
+
+<span class="cm"># ── Convert DataFrame to CSV string ───────────────────────</span>
+<span class="cm"># .to_csv(index=False) → CSV string without the 0,1,2 index</span>
+<span class="cm"># .encode("utf-8")    → convert to bytes (required for download)</span>
+<span class="var">csv_data</span> <span class="op">=</span> <span class="var">df</span>.<span class="fn">to_csv</span>(<span class="var">index</span><span class="op">=</span><span class="kw">False</span>).<span class="fn">encode</span>(<span class="str">"utf-8"</span>)
+
+<span class="cm"># ── Download button ───────────────────────────────────────</span>
+<span class="fn">st.download_button</span>(
+    <span class="var">label</span><span class="op">=</span><span class="str">"⬇️ Download Results as CSV"</span>,
+    <span class="var">data</span><span class="op">=</span><span class="var">csv_data</span>,              <span class="cm"># The data to download</span>
+    <span class="var">file_name</span><span class="op">=</span><span class="str">"test_results.csv"</span>,<span class="cm"># Suggested filename</span>
+    <span class="var">mime</span><span class="op">=</span><span class="str">"text/csv"</span>             <span class="cm"># File type (MIME type)</span>
+)
+
+<span class="fn">st.divider</span>()
+
+<span class="cm"># ── Download a text file ──────────────────────────────────</span>
+<span class="var">report_text</span> <span class="op">=</span> <span class="str">"""
+QA Test Report — Sprint 42
+==========================
+Project: ICAPS
+Total Tests: 52
+Passed: 47
+Failed: 3
+Pass Rate: 90.4%
+"""</span>
+<span class="fn">st.download_button</span>(
+    <span class="var">label</span><span class="op">=</span><span class="str">"📄 Download Text Report"</span>,
+    <span class="var">data</span><span class="op">=</span><span class="var">report_text</span>,
+    <span class="var">file_name</span><span class="op">=</span><span class="str">"qa_report.txt"</span>,
+    <span class="var">mime</span><span class="op">=</span><span class="str">"text/plain"</span>
+)</pre>
+  </div>
+
+  <table>
+    <thead><tr><th>Parameter</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><code>label</code></td><td>Text on the download button</td></tr>
+      <tr><td><code>data</code></td><td>The actual data to download — string, bytes, or file</td></tr>
+      <tr><td><code>file_name</code></td><td>Suggested filename when saved (user can change it)</td></tr>
+      <tr><td><code>mime</code></td><td>File type: <code>"text/csv"</code>, <code>"text/plain"</code>, <code>"application/json"</code>, <code>"application/octet-stream"</code></td></tr>
+      <tr><td><strong>Returns</strong></td><td><code>True</code> when clicked (like a regular button)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══ L10 — PROJECT ═══ -->
+<div class="lesson" id="project">
+  <div class="lesson-num">Lesson 10</div>
+  <h2>🏗️ Mini Project — Interactive Test Results Viewer</h2>
+
+  <p>Let's build the most useful thing a QA engineer can have — an <strong>interactive test results viewer</strong> with live filtering, colour-coded results, KPI cards, and CSV export. All on one page!</p>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">python — test_results_viewer.py — save and run this!</span><div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div></div>
+    <pre><span class="kw">import</span> <span class="cls">streamlit</span> <span class="kw">as</span> <span class="var">st</span>
+<span class="kw">import</span> <span class="cls">pandas</span> <span class="kw">as</span> <span class="var">pd</span>
+
+<span class="fn">st.set_page_config</span>(<span class="var">page_title</span><span class="op">=</span><span class="str">"Test Results Viewer"</span>,
+                   <span class="var">page_icon</span><span class="op">=</span><span class="str">"🧪"</span>, <span class="var">layout</span><span class="op">=</span><span class="str">"wide"</span>)
+
+<span class="cm"># ── Sample data (replace with pd.read_csv("file.csv") later)</span>
+<span class="var">data</span> <span class="op">=</span> {
+    <span class="str">"TC_ID"</span>:    [<span class="str">"TC-001"</span>,<span class="str">"TC-002"</span>,<span class="str">"TC-003"</span>,<span class="str">"TC-004"</span>,
+                 <span class="str">"TC-005"</span>,<span class="str">"TC-006"</span>,<span class="str">"TC-007"</span>,<span class="str">"TC-008"</span>],
+    <span class="str">"Module"</span>:   [<span class="str">"Auth"</span>,<span class="str">"Auth"</span>,<span class="str">"Dashboard"</span>,<span class="str">"Dashboard"</span>,
+                 <span class="str">"API"</span>,<span class="str">"API"</span>,<span class="str">"Reports"</span>,<span class="str">"Reports"</span>],
+    <span class="str">"Result"</span>:   [<span class="str">"Pass"</span>,<span class="str">"Pass"</span>,<span class="str">"Fail"</span>,<span class="str">"Pass"</span>,
+                 <span class="str">"Pass"</span>,<span class="str">"Blocked"</span>,<span class="str">"Fail"</span>,<span class="str">"Pass"</span>],
+    <span class="str">"Priority"</span>: [<span class="str">"High"</span>,<span class="str">"High"</span>,<span class="str">"High"</span>,<span class="str">"Med"</span>,
+                 <span class="str">"Med"</span>,<span class="str">"Med"</span>,<span class="str">"Low"</span>,<span class="str">"Low"</span>],
+    <span class="str">"Duration"</span>: [<span class="num">2.3</span>,<span class="num">1.8</span>,<span class="num">5.8</span>,<span class="num">3.1</span>,<span class="num">0.9</span>,<span class="num">0.0</span>,<span class="num">4.2</span>,<span class="num">2.7</span>],
+    <span class="str">"Tester"</span>:   [<span class="str">"Umakant"</span>,<span class="str">"Ravi"</span>,<span class="str">"Umakant"</span>,<span class="str">"Priya"</span>,
+                 <span class="str">"Ravi"</span>,<span class="str">"Priya"</span>,<span class="str">"Umakant"</span>,<span class="str">"Ravi"</span>]
+}
+<span class="var">df</span> <span class="op">=</span> <span class="cls">pd</span>.<span class="fn">DataFrame</span>(<span class="var">data</span>)
+
+<span class="cm"># ── SIDEBAR ───────────────────────────────────────────────</span>
+<span class="kw">with</span> <span class="var">st.sidebar</span>:
+    <span class="fn">st.title</span>(<span class="str">"🧪 Test Viewer"</span>)
+    <span class="fn">st.divider</span>()
+    <span class="var">res_filter</span> <span class="op">=</span> <span class="fn">st.multiselect</span>(<span class="str">"Result:"</span>,
+        <span class="var">df</span>[<span class="str">"Result"</span>].<span class="fn">unique</span>(), <span class="var">default</span><span class="op">=</span><span class="var">df</span>[<span class="str">"Result"</span>].<span class="fn">unique</span>())
+    <span class="var">mod_filter</span> <span class="op">=</span> <span class="fn">st.multiselect</span>(<span class="str">"Module:"</span>,
+        <span class="var">df</span>[<span class="str">"Module"</span>].<span class="fn">unique</span>(), <span class="var">default</span><span class="op">=</span><span class="var">df</span>[<span class="str">"Module"</span>].<span class="fn">unique</span>())
+    <span class="var">tester_filter</span> <span class="op">=</span> <span class="fn">st.multiselect</span>(<span class="str">"Tester:"</span>,
+        <span class="var">df</span>[<span class="str">"Tester"</span>].<span class="fn">unique</span>(), <span class="var">default</span><span class="op">=</span><span class="var">df</span>[<span class="str">"Tester"</span>].<span class="fn">unique</span>())
+
+<span class="cm"># ── FILTER ────────────────────────────────────────────────</span>
+<span class="var">fdf</span> <span class="op">=</span> <span class="var">df</span>[
+    <span class="var">df</span>[<span class="str">"Result"</span>].<span class="fn">isin</span>(<span class="var">res_filter</span>) <span class="op">&amp;</span>
+    <span class="var">df</span>[<span class="str">"Module"</span>].<span class="fn">isin</span>(<span class="var">mod_filter</span>) <span class="op">&amp;</span>
+    <span class="var">df</span>[<span class="str">"Tester"</span>].<span class="fn">isin</span>(<span class="var">tester_filter</span>)
+]
+
+<span class="cm"># ── HEADER ────────────────────────────────────────────────</span>
+<span class="fn">st.title</span>(<span class="str">"🧪 Interactive Test Results Viewer"</span>)
+
+<span class="cm"># ── KPI ROW ───────────────────────────────────────────────</span>
+<span class="var">total</span>   <span class="op">=</span> <span class="fn">len</span>(<span class="var">fdf</span>)
+<span class="var">passed</span>  <span class="op">=</span> <span class="fn">len</span>(<span class="var">fdf</span>[<span class="var">fdf</span>[<span class="str">"Result"</span>]<span class="op">==</span><span class="str">"Pass"</span>])
+<span class="var">failed</span>  <span class="op">=</span> <span class="fn">len</span>(<span class="var">fdf</span>[<span class="var">fdf</span>[<span class="str">"Result"</span>]<span class="op">==</span><span class="str">"Fail"</span>])
+<span class="var">blocked</span> <span class="op">=</span> <span class="fn">len</span>(<span class="var">fdf</span>[<span class="var">fdf</span>[<span class="str">"Result"</span>]<span class="op">==</span><span class="str">"Blocked"</span>])
+<span class="var">rate</span>    <span class="op">=</span> <span class="str">f"{passed/total*100:.1f}%"</span> <span class="kw">if</span> <span class="var">total</span> <span class="op">&gt;</span> <span class="num">0</span> <span class="kw">else</span> <span class="str">"N/A"</span>
+
+<span class="var">k1</span>,<span class="var">k2</span>,<span class="var">k3</span>,<span class="var">k4</span>,<span class="var">k5</span> <span class="op">=</span> <span class="fn">st.columns</span>(<span class="num">5</span>)
+<span class="kw">with</span> <span class="var">k1</span>: <span class="fn">st.metric</span>(<span class="str">"Total"</span>,   <span class="var">total</span>)
+<span class="kw">with</span> <span class="var">k2</span>: <span class="fn">st.metric</span>(<span class="str">"Passed"</span>,  <span class="var">passed</span>)
+<span class="kw">with</span> <span class="var">k3</span>: <span class="fn">st.metric</span>(<span class="str">"Failed"</span>,  <span class="var">failed</span>)
+<span class="kw">with</span> <span class="var">k4</span>: <span class="fn">st.metric</span>(<span class="str">"Blocked"</span>, <span class="var">blocked</span>)
+<span class="kw">with</span> <span class="var">k5</span>: <span class="fn">st.metric</span>(<span class="str">"Pass Rate"</span>,<span class="var">rate</span>)
+
+<span class="fn">st.divider</span>()
+
+<span class="cm"># ── COLOURED TABLE ────────────────────────────────────────</span>
+<span class="kw">def</span> <span class="fn">colour_result</span>(<span class="var">v</span>):
+    <span class="kw">return</span> (<span class="str">"background-color:#c8e6c9;color:#1b5e20"</span> <span class="kw">if</span> <span class="var">v</span><span class="op">==</span><span class="str">"Pass"</span>
+            <span class="kw">else</span> <span class="str">"background-color:#ffcdd2;color:#b71c1c"</span> <span class="kw">if</span> <span class="var">v</span><span class="op">==</span><span class="str">"Fail"</span>
+            <span class="kw">else</span> <span class="str">"background-color:#fff9c4;color:#f57f17"</span>)
+
+<span class="var">styled</span> <span class="op">=</span> <span class="var">fdf</span>.<span class="fn">style</span>.<span class="fn">map</span>(<span class="fn">colour_result</span>, <span class="var">subset</span><span class="op">=</span>[<span class="str">"Result"</span>])
+
+<span class="fn">st.subheader</span>(<span class="str">f"Results ({len(fdf)} tests)"</span>)
+<span class="fn">st.dataframe</span>(<span class="var">styled</span>, <span class="var">use_container_width</span><span class="op">=</span><span class="kw">True</span>,
+             <span class="var">hide_index</span><span class="op">=</span><span class="kw">True</span>, <span class="var">height</span><span class="op">=</span><span class="num">300</span>)
+
+<span class="cm"># ── EXPORT ────────────────────────────────────────────────</span>
+<span class="fn">st.download_button</span>(
+    <span class="str">"⬇️ Export Filtered Results as CSV"</span>,
+    <span class="var">fdf</span>.<span class="fn">to_csv</span>(<span class="var">index</span><span class="op">=</span><span class="kw">False</span>).<span class="fn">encode</span>(<span class="str">"utf-8"</span>),
+    <span class="str">"filtered_results.csv"</span>, <span class="str">"text/csv"</span>
+)
+
+<span class="cm"># ── RAW JSON VIEW ─────────────────────────────────────────</span>
+<span class="kw">with</span> <span class="fn">st.expander</span>(<span class="str">"🔍 View raw data as JSON"</span>):
+    <span class="fn">st.json</span>(<span class="var">fdf</span>.<span class="fn">to_dict</span>(<span class="var">orient</span><span class="op">=</span><span class="str">"records"</span>))</pre>
+  </div>
+</div>
+
+<!-- CHEAT SHEET -->
+<div class="lesson" id="cheat">
+  <div class="lesson-num">Lesson 11</div>
+  <h2>Day 4 Cheat Sheet 📋</h2>
+  <div class="cheat">
+    <div class="cheat-title">⚡ Data Display Quick Reference</div>
+
+    <div class="cheat-section">// Pandas Basics</div>
+    <div class="cheat-row"><div class="cheat-code">import pandas as pd</div><div class="cheat-desc">Always import with alias pd</div></div>
+    <div class="cheat-row"><div class="cheat-code">pd.DataFrame({"col": [v1,v2]})</div><div class="cheat-desc">Create DataFrame from dict</div></div>
+    <div class="cheat-row"><div class="cheat-code">df[df["col"] == "val"]</div><div class="cheat-desc">Filter rows where col equals val</div></div>
+    <div class="cheat-row"><div class="cheat-code">df["col"].isin(["a","b"])</div><div class="cheat-desc">Filter rows matching list values</div></div>
+    <div class="cheat-row"><div class="cheat-code">df["col"].unique().tolist()</div><div class="cheat-desc">Get all unique values in column as list</div></div>
+    <div class="cheat-row"><div class="cheat-code">df.sort_values("col")</div><div class="cheat-desc">Sort by column ascending</div></div>
+    <div class="cheat-row"><div class="cheat-code">df["col"].value_counts()</div><div class="cheat-desc">Count occurrences of each value</div></div>
+    <div class="cheat-row"><div class="cheat-code">df.head(5)</div><div class="cheat-desc">First 5 rows only</div></div>
+    <div class="cheat-row"><div class="cheat-code">df.shape</div><div class="cheat-desc">Tuple of (rows, columns)</div></div>
+    <div class="cheat-row"><div class="cheat-code">pd.read_csv("file.csv")</div><div class="cheat-desc">Load CSV file into DataFrame</div></div>
+    <div class="cheat-row"><div class="cheat-code">df.to_csv(index=False).encode("utf-8")</div><div class="cheat-desc">Convert DataFrame to downloadable CSV bytes</div></div>
+
+    <div class="cheat-section">// Display Functions</div>
+    <div class="cheat-row"><div class="cheat-code">st.write(df)</div><div class="cheat-desc">Auto-display anything — quick and simple</div></div>
+    <div class="cheat-row"><div class="cheat-code">st.dataframe(df, use_container_width=True)</div><div class="cheat-desc">Interactive sortable table, stretches to width</div></div>
+    <div class="cheat-row"><div class="cheat-code">st.dataframe(df, height=300, hide_index=True)</div><div class="cheat-desc">Fixed height, no index column</div></div>
+    <div class="cheat-row"><div class="cheat-code">st.table(df)</div><div class="cheat-desc">Static table — no scroll, shows all rows</div></div>
+    <div class="cheat-row"><div class="cheat-code">st.json({"key": "val"})</div><div class="cheat-desc">Beautiful collapsible JSON tree</div></div>
+    <div class="cheat-row"><div class="cheat-code">st.json(data, expanded=False)</div><div class="cheat-desc">JSON tree collapsed by default</div></div>
+
+    <div class="cheat-section">// Column Config</div>
+    <div class="cheat-row"><div class="cheat-code">st.column_config.ProgressColumn("label", max_value=10)</div><div class="cheat-desc">Show numbers as progress bars</div></div>
+    <div class="cheat-row"><div class="cheat-code">st.column_config.TextColumn("label")</div><div class="cheat-desc">Rename a column's display label</div></div>
+    <div class="cheat-row"><div class="cheat-code">st.column_config.LinkColumn("label")</div><div class="cheat-desc">Make URLs clickable in cells</div></div>
+
+    <div class="cheat-section">// Styling</div>
+    <div class="cheat-row"><div class="cheat-code">df.style.map(fn, subset=["col"])</div><div class="cheat-desc">Apply CSS style function cell-by-cell</div></div>
+    <div class="cheat-row"><div class="cheat-code">df.style.background_gradient(cmap="RdYlGn")</div><div class="cheat-desc">Red→Green gradient on numeric column</div></div>
+    <div class="cheat-row"><div class="cheat-code">df.style.highlight_max(color="#ffcdd2")</div><div class="cheat-desc">Highlight the maximum value cell</div></div>
+
+    <div class="cheat-section">// File Upload &amp; Download</div>
+    <div class="cheat-row"><div class="cheat-code">st.file_uploader("label", type=["csv"])</div><div class="cheat-desc">File upload widget — returns file object or None</div></div>
+    <div class="cheat-row"><div class="cheat-code">pd.read_csv(uploaded_file)</div><div class="cheat-desc">Read uploaded file directly with Pandas</div></div>
+    <div class="cheat-row"><div class="cheat-code">st.download_button("label", data, "file.csv", "text/csv")</div><div class="cheat-desc">One-click download button</div></div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div class="lesson" id="quiz">
+  <div class="lesson-num">Lesson 12</div>
+  <h2>Mini Quiz 🧠</h2>
+  <div class="quiz">
+    <div class="quiz-title">✏️ Test Yourself — Day 4</div>
+    <ol>
+      <li>What is the difference between <code>st.dataframe()</code> and <code>st.table()</code>? When would you choose one over the other?</li>
+      <li>How do you filter a DataFrame to show only rows where the "Result" column equals "Fail"?</li>
+      <li>What does <code>df["Result"].unique().tolist()</code> return?</li>
+      <li>What does <code>use_container_width=True</code> do in <code>st.dataframe()</code>?</li>
+      <li>What do you need to call on a DataFrame to convert it to downloadable CSV bytes for <code>st.download_button()</code>?</li>
+      <li>When <code>st.file_uploader()</code> has no file uploaded, what does it return?</li>
+      <li>What Pandas operator do you use to combine two filter conditions? (Hint: it's NOT Python's <code>and</code>)</li>
+      <li>What does <code>df.style.map(colour_fn, subset=["Result"])</code> do?</li>
+    </ol>
+    <details class="quiz-ans">
+      <summary>👀 Reveal Answers</summary>
+      <ol style="margin-top:0.8rem;margin-left:1.2rem;font-size:0.88rem;color:#1a3a1a;">
+        <li><code>st.dataframe()</code> is interactive (sortable, scrollable, configurable). <code>st.table()</code> is static (shows all rows, no interaction). Use dataframe for large data, table for small summary reports.</li>
+        <li><code>df[df["Result"] == "Fail"]</code></li>
+        <li>A Python list of all unique values in the "Result" column — e.g. <code>["Pass", "Fail", "Blocked"]</code></li>
+        <li>The table stretches to fill the full width of its parent container (column or page), instead of using a default fixed width.</li>
+        <li><code>df.to_csv(index=False).encode("utf-8")</code></li>
+        <li><code>None</code></li>
+        <li>The <code>&amp;</code> operator (ampersand). Each condition must be in parentheses: <code>(cond1) &amp; (cond2)</code></li>
+        <li>It applies the <code>colour_fn</code> function to every individual cell in the "Result" column and returns the CSS style string for that cell.</li>
+      </ol>
+    </details>
+  </div>
+</div>
+
+<!-- HOMEWORK -->
+<div class="lesson" id="hw">
+  <div class="lesson-num">Lesson 13</div>
+  <h2>Homework 🏠</h2>
+  <div class="homework">
+    <div class="hw-title">📌 Day 4 Homework</div>
+    <div class="hw-subtitle">// complete before Day 5 · estimated 45–60 mins</div>
+    <ul class="hw-list">
+      <li>Create a DataFrame manually with at least <strong>10 test cases</strong> — include columns: TC_ID, Module, Test_Name, Result (Pass/Fail/Blocked), Priority (High/Medium/Low), Duration (float), Tester Name.</li>
+      <li>Display it using <code>st.dataframe()</code> with <code>hide_index=True</code> and <code>use_container_width=True</code>. Add a <code>ProgressColumn</code> for the Duration column.</li>
+      <li>Add <strong>three sidebar filters</strong>: multiselect for Result, multiselect for Priority, and a slider for max Duration. Apply all three filters simultaneously and show a live count of matching rows.</li>
+      <li>Add <strong>colour coding</strong> to the Result column — green for Pass, red for Fail, yellow for Blocked.</li>
+      <li>Add a <code>st.download_button()</code> that exports the <strong>filtered</strong> DataFrame (not the full one) as CSV.</li>
+      <li><strong>Bonus:</strong> Add a <code>st.file_uploader()</code> so users can upload their own CSV file and the app analyses it instead of the hardcoded data. Show a row count, column count, and missing values metric when a file is uploaded.</li>
+    </ul>
+  </div>
+  <div class="box tip">
+    <div class="box-label">👨‍🏫 Trainer's Note</div>
+    This homework is a <strong>real tool</strong> you can use at work immediately. After this homework, you have a test results viewer that you can share with your team, your manager, and add to your portfolio. Just replace the hardcoded data with your actual Jira/Excel export and you're done!
+  </div>
+  <p style="margin-top:1.5rem;color:var(--muted);font-size:0.9rem;">
+    📅 <strong>Coming up on Day 5:</strong> Charts & Visualisation — <code>st.line_chart()</code>, <code>st.bar_chart()</code>, <code>st.plotly_chart()</code>. Turn your test data into beautiful graphs and dashboards!
+  </p>
+</div>
+
+</main>
+
+<footer>
+  <p>🐍 Python Trainer Series &nbsp;·&nbsp; <span>Streamlit in 30 Days</span> &nbsp;·&nbsp; Day 4 of 30</p>
+  <p style="margin-top:0.4rem;color:#1e293b;">Personalised notes for Umakant Pandey &nbsp;·&nbsp; Keep practising every day!</p>
+</footer>
+</body>
+</html>
